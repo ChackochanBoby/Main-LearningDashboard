@@ -1,8 +1,9 @@
 const express = require("express");
+const { userSignup } = require("../../controllers/authControllers");
 const router = express.Router();
 
 //User authentication
-router.post("/user/register", (req, res) => res.send("create user"));
+router.post("/user/register", userSignup);
 router.post("/user/login", (req, res) => res.send("user login"));
 
 //Admin authentication
