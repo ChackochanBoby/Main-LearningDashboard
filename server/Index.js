@@ -5,17 +5,28 @@ const { connectDb } = require("./config/db");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const routes = require("./routes");
+const {
+  generalErrorHandler,
+  notFoundErrorHandler,
+} = require("./middleware/errorHandler");
 
 // Middleware
 app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Routes
 app.get("/", (req, res) => {
   res.send("Welcome to MindSpring!");
 });
 
 app.use("/api", routes);
+
+//404 error handler middleware
+app.use("*", notFoundErrorHandler);
+
+//general error handler middleware
+app.use(generalErrorHandler);
 
 // Function to start server when database connected successfully
 const startServer = async () => {
