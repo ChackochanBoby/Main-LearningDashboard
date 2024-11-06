@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema(
       ],
     },
     password: { type: String, required: true },
+    profileImg: { type: String },
+    profileImgPublicId: { type: String },
+    bio: { type: String },
   },
   { timestamps: true }
 );

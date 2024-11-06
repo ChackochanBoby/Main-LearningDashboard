@@ -1,10 +1,10 @@
 var jwt = require("jsonwebtoken");
 
-// user
-const generateUserToken = async (payload) => {
+// user (exp - optional expiery time)
+const generateUserToken = async (payload,exp) => {
   try {
     const token = await jwt.sign(payload, process.env.TOKEN_SECRET_USER, {
-      expiresIn: "1d",
+      expiresIn: exp?exp:"1d",
     });
     return token;
   } catch (error) {
@@ -12,11 +12,11 @@ const generateUserToken = async (payload) => {
   }
 };
 
-//admin
-const generateAdminToken = async (payload) => {
+//admin (exp - optional expiery time)
+const generateAdminToken = async (payload,exp) => {
   try {
     const token = await jwt.sign(payload, process.env.TOKEN_SECRET_ADMIN, {
-      expiresIn: "1d",
+      expiresIn: exp?exp:"1d",
     });
     return token;
   } catch (error) {

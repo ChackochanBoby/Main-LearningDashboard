@@ -2,6 +2,9 @@ const bcrypt = require("bcrypt");
 const { User } = require("../models/userModel");
 const { Admin } = require("../models/adminModel");
 const { generateUserToken, generateAdminToken } = require("../utils/jwt");
+const { transporter } = require("../config/nodeMailer");
+const jwt = require("jsonwebtoken");
+
 
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -137,6 +140,91 @@ const userLogout = async (req, res, next) => {
     next(error);
   }
 };
+
+//user email update request
+const updateUserEmail = async (req, res, next) => {
+  const { userId } = req;
+  const { password, newEmail } = req.body;
+  if (!userId) {
+    return res.status(401).json({ success: false, message: "missing userId" });
+  }
+  if (!emailRegex.test(newEmail)) {
+    return res.status(400).json({
+      success: false,
+      message: "Enter a valid email",
+    });
+  }
+  if (!passwordRegex.test(password)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+    });
+  }
+  try {
+    const userExists = await User.findById(userId).exec();
+
+    if (!userExists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User does not exist" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, userExists.password);
+    if (!passwordMatch) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Password is incorrect" });
+    }
+    const verificationToken = await generateUserToken({id:userExists.id, newEmail:newEmail},"120s")
+    const mailOptions = {
+      from: 'learn.mindspring@gmail.com',
+      to: newEmail,
+      subject: "Email verification",
+      text: "Verification",
+      html: `<div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+  
+    <h1 style="color: #333; font-size: 24px; text-align: center;">Email Change Verification</h1>
+  
+    <p style="font-size: 16px; line-height: 1.6; color: #555;">Hello ${userExists.name},</p>
+  
+    <p style="font-size: 16px; line-height: 1.6; color: #555;">We received a request to change the email address associated with your account. If you did not make this request, please ignore this message.</p>
+  
+    <p style="font-size: 16px; line-height: 1.6; color: #555;">To confirm your new email address, please click the button below:</p>
+  
+  <a href="${process.env.BACKEND_BASE_URL}/auth/user/email-verify?token=${verificationToken}" style="display: inline-block; padding: 12px 24px; margin-top: 20px; background-color: #28a745; color: #ffffff; text-decoration: none; border-radius: 5px; text-align: center;">Confirm Email Change</a>
+  
+  <p style="font-size: 16px; line-height: 1.6; color: #555;">If you have any questions, feel free to contact our support team.</p>
+  <p style="font-size: 16px; line-height: 1.6; color: #555;">Thank you,</p>
+  <p style="font-size: 16px; line-height: 1.6; color: #555;">Your Project Team</p>
+
+  <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #888;">
+    <p>Don't recognize this email? You can ignore it. If you have any concerns, please contact support.</p>
+  </div>
+
+</div>`,
+    };
+    await transporter.sendMail(mailOptions)
+    res.status(200).json({success:true,message:"verification email sent"})
+  } catch (error) {
+    next(error)
+  }
+};
+
+//user email change after verification
+const verifyEmailChange = async (req, res, next) => {
+  const { token } = req.query
+  try {
+    const decoded = await jwt.verify(token, process.env.TOKEN_SECRET_USER)
+    const user = await User.findByIdAndUpdate( decoded.id,{email:decoded.newEmail}).exec()
+    if (!user) {
+      return res.status(404).json({success:false,message:"user not found"})
+    }
+    res.status(200).json({success:true,message:"email changed"})
+  } catch (error) {
+    next(error)
+  }
+}
 
 /* ADMIN related auth controllers */
 
@@ -276,6 +364,8 @@ module.exports = {
   userSignup,
   userLogin,
   userLogout,
+  updateUserEmail,
+  verifyEmailChange,
   adminSignup,
   adminLogin,
   adminLogout,
