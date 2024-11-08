@@ -30,6 +30,7 @@ const userProfile = async (req, res, next) => {
     next(error);
   }
 };
+
 //update user profile
 const updateUserProfile = async (req, res, next) => {
   const { userId } = req;
@@ -47,6 +48,7 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
+//update user profile image
 const updateUserProfileImg = async (req, res, next) => {
     const { userId } = req;
     const imgPath = req.file?.path

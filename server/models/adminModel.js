@@ -11,6 +11,8 @@ const adminSchema = new mongoose.Schema(
         "Passionate educator dedicated to fostering learning and growth.",
     },
     role: { type: String, default: "instructor" },
+    profileImg: { type: String },
+    profileImgPublicId: { type: String },
   },
   { timestamps: true }
 );

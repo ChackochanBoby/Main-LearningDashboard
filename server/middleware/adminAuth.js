@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 
 const adminAuth = async (req, res, next) => {
     const { tokenAdmin } = req.cookies;
-    console.log(tokenAdmin)
   if (!tokenAdmin) {
     return res
       .status(401)
