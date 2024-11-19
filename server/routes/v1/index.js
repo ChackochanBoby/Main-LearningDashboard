@@ -15,10 +15,10 @@ router.use("/auth", authRouter);
 router.use("/users", userRouter);
 router.use("/admins", adminRouter);
 router.use("/courses", courseRouter);
-router.use("/:courseid/modules", moduleRouter);
-router.use("/:moduleId/lessons", lessonRouter);
-router.use("/:lessonId/quiz", quizRouter);
-router.use("/:moduleId/assignment", assignmentRouter);
+router.use("/modules", moduleRouter);
+router.use("/lessons", lessonRouter);
+router.use("/quiz", quizRouter);
+router.use("/assignment", assignmentRouter);
 
 //for middleware testing (to be removed)
 router.get("/",userAuth,(req,res)=>res.send(req.userId))

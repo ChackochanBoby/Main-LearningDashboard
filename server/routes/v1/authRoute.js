@@ -6,15 +6,15 @@ const router = express.Router();
 
 //User authentication
 router.post("/user/register", userSignup);
-router.post("/user/login", userLogin);
-router.post("/user/logout", userLogout);
+router.post("/user/login",userLogin);
+router.post("/user/logout", userAuth, userLogout);
 router.post("/user/email-verify", userAuth, updateUserEmail)
 router.get("/user/email-verify",verifyEmailChange)
 
 //Admin authentication
 router.post("/admin/register", adminSignup);
 router.post("/admin/login", adminLogin);
-router.post("/admin/logout", adminLogout);
+router.post("/admin/logout", adminAuth, adminLogout);
 router.post("/admin/email-verify", adminAuth, updateAdminEmail)
 router.get("/admin/email-verify", verifyAdminEmailChange)
 

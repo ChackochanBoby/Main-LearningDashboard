@@ -63,6 +63,9 @@ const updateAdminProfileImg = async (req, res, next) => {
   }
   try {
     const admin = await Admin.findById(adminData.id).exec();
+    if (!user) {
+      return res.status(404).json({success:false,message:"user not found"})
+    }
     const oldImgPublicId = admin.profileImgPublicId;
     if (oldImgPublicId) {
       await cloudinaryInstance.uploader.destroy(oldImgPublicId);
@@ -98,6 +101,7 @@ const checkAdmin = async (req, res, next) => {
     next(error);
   }
 };
+
 
 module.exports = {
   adminProfile,

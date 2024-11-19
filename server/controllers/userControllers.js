@@ -57,7 +57,12 @@ const updateUserProfileImg = async (req, res, next) => {
         return res.status(400).json({success:false,message:"missing image or public id"})
     }
     try {
-        const user = await User.findById(userId).exec()
+      const user = await User.findById(userId).exec()
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "user not found" });
+      }
         const oldImgPublicId = user.profileImgPublicId
         if (oldImgPublicId) {
             await cloudinaryInstance.uploader.destroy(oldImgPublicId)
@@ -88,7 +93,7 @@ const checkUser = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "user is authorized",
-      data: { name: decoded.name, id: decoded.id },
+      data: { name: decoded.name, id: decoded.id,role:"user" },
     });
   } catch (error) {
     next(error);
