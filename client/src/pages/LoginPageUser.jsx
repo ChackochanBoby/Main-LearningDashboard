@@ -16,7 +16,8 @@ const LoginPageUser = () => {
   };
 
   return (
-    <div className="flex flex-col bg-base-200 py-16 gap-8 w-full md:w-1/2 xl:w-2/5 2xl:w-2/5 3xl:w-1/3 mx-auto p-8 md:p-10 2xl:p-12 3xl:p-14 rounded-2xl shadow-xl my-16">
+    <main className='flex justify-center items-center'>
+      <div className="flex flex-col bg-base-200 py-16 gap-8 w-full md:w-1/2 xl:w-2/5 2xl:w-2/5 3xl:w-1/3 mx-auto p-8 md:p-10 2xl:p-12 3xl:p-14 rounded-2xl shadow-xl my-16">
       <div className="flex flex-row gap-3 pb-4">
         <h1 className="text-3xl font-bold my-auto">Login to MindSpring</h1>
       </div>
@@ -52,15 +53,16 @@ const LoginPageUser = () => {
           <input type="submit" value="Login" className="btn btn-primary" />
         </form>
 
-        <div className="w-full flex flex-row items-center py-2 before:content-[''] before:w-full before:h-[2px] before:bg-neutral after:content-[''] after:w-full after:h-[2px] after:bg-neutral">
+        {/* <div className="w-full flex flex-row items-center py-2 before:content-[''] before:w-full before:h-[2px] before:bg-neutral after:content-[''] after:w-full after:h-[2px] after:bg-neutral">
           <span className="px-1">OR</span>
-        </div>
+        </div> */}
 
         <p className="text-center">
           Don&apos;t have an Account? <Link to="/user/signup" className="link link-primary">SignUp</Link>
         </p>
       </div>
     </div>
+    </main>
   );
 };
 

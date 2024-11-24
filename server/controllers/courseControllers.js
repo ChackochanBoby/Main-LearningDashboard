@@ -118,13 +118,11 @@ const updateCourseImg = async (req, res, next) => {
       admin.role === "instructor" &&
       admin.id !== course.instructor.toString()
     ) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message:
-            "only admin and instructor of this course can access this route",
-        });
+      return res.status(401).json({
+        success: false,
+        message:
+          "only admin and instructor of this course can access this route",
+      });
     }
 
     const oldImgPublicId = course.thumbnailPublicId;
@@ -169,9 +167,11 @@ const getCourseDetails = async (req, res, next) => {
 };
 const getCourseDetailsForAdmins = async (req, res, next) => {
   const { courseId } = req.params;
-  const { admin } = req
+  const { admin } = req;
   if (!admin && (!admin.id || !admin.role)) {
-    return res.status(400).json({success:false,message:"admin role and id required"})
+    return res
+      .status(400)
+      .json({ success: false, message: "admin role and id required" });
   }
   if (!courseId) {
     return res
@@ -192,7 +192,9 @@ const getCourseDetailsForAdmins = async (req, res, next) => {
         .json({ success: false, message: "course not found" });
     }
     if (admin.role === "instructor" && admin.role !== course.instructor._id) {
-      return res.status(401).json({success:false,message:"unauthorized access"})
+      return res
+        .status(401)
+        .json({ success: false, message: "unauthorized access" });
     }
     res
       .status(200)
@@ -206,14 +208,27 @@ const getCourseDetailsForAdmins = async (req, res, next) => {
 
 //get all published course courses
 const getPublishedCourses = async (req, res, next) => {
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (parseInt(page) - 1) * parseInt(limit);
   try {
-    const courses = await Course.find({ status: "approved" })
-      .populate({ path: "instructor", select: "name" })
-      .exec();
-    if (!courses || courses.length === 0) {
-      return res.status(404).json({ success: false, message: "no courses to be found" });
+    const [result, totalResults] = await Promise.all([
+      Course.find({status:"approved"})
+        .skip(skip)
+        .limit(parseInt(limit))
+        .populate({ path: "instructor", select: "name" })
+        .exec(),
+      Course.countDocuments({status:"approved"}),
+    ]);
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "no courses to be found" });
     }
-    const mappedCourses = courses.map((course) => {
+    const totalPages = Math.ceil(totalResults / limit);
+    if(page>totalPages){
+      return res.status(400).json({success:false,message:"page number is not valid"})
+    }
+    const mappedCourses = result.map((course) => {
       return {
         title: course.title,
         instructor: course.instructor,
@@ -225,6 +240,8 @@ const getPublishedCourses = async (req, res, next) => {
       success: true,
       message: "fetched published courses",
       data: mappedCourses,
+      totalPages: totalPages,
+      totalResults: totalResults,
     });
   } catch (error) {
     next(error);
@@ -233,20 +250,29 @@ const getPublishedCourses = async (req, res, next) => {
 //get all courses with query params
 const getAllCourses = async (req, res, next) => {
   try {
-    const { status } = req.query
-    if (status && status !== "draft" && status !== "unpublished" && status !== "approved") {
-      return res.status(400).json({ success: false, message: "unexpected query param value" });
+    const { status } = req.query;
+    if (
+      status &&
+      status !== "draft" &&
+      status !== "unpublished" &&
+      status !== "approved"
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "unexpected query param value" });
     }
-    const optional = {}
+    const optional = {};
     if (status) {
-      optional.status=status
+      optional.status = status;
     }
     const courses = await Course.find(optional)
       .populate({ path: "instructor", select: "name" })
       .exec();
-      if (courses.length === 0) {
-        return res.status(404).json({ success: false, message: "no courses to be found" });
-      }
+    if (courses.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "no courses to be found" });
+    }
     const mappedCourses = courses.map((course) => {
       return {
         title: course.title,
@@ -304,13 +330,11 @@ const coursesToBeReviewed = async (req, res, next) => {
         .status(404)
         .json({ success: false, message: "Course not found" });
     }
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "fetched courses to be reviewed",
-        data: toBeReviewed,
-      });
+    res.status(200).json({
+      success: true,
+      message: "fetched courses to be reviewed",
+      data: toBeReviewed,
+    });
   } catch (error) {
     next(error);
   }
@@ -340,12 +364,10 @@ const reviewCourse = async (req, res, next) => {
     case "unpublished":
       feedback = review.feedback;
       if (!feedback) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            message: "Feedback is required for unpublished courses",
-          });
+        return res.status(400).json({
+          success: false,
+          message: "Feedback is required for unpublished courses",
+        });
       }
       break;
     default:
@@ -389,5 +411,5 @@ module.exports = {
   getPublishedCourses,
   reviewCourse,
   coursesToBeReviewed,
-  addForReview
+  addForReview,
 };

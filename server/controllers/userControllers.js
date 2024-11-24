@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/userModel");
-const {cloudinaryInstance} = require("../config/fileUpload")
+const { cloudinaryInstance } = require("../config/fileUpload");
+const { Enrollment } = require("../models/enrollmentModel");
 
 // User Profile
 const userProfile = async (req, res, next) => {
@@ -50,30 +51,32 @@ const updateUserProfile = async (req, res, next) => {
 
 //update user profile image
 const updateUserProfileImg = async (req, res, next) => {
-    const { userId } = req;
-    const imgPath = req.file?.path
-    const imgPublicId=req.file?.filename
-    if (!imgPath||!imgPublicId) {
-        return res.status(400).json({success:false,message:"missing image or public id"})
+  const { userId } = req;
+  const imgPath = req.file?.path;
+  const imgPublicId = req.file?.filename;
+  if (!imgPath || !imgPublicId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "missing image or public id" });
+  }
+  try {
+    const user = await User.findById(userId).exec();
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "user not found" });
     }
-    try {
-      const user = await User.findById(userId).exec()
-      if (!user) {
-        return res
-          .status(404)
-          .json({ success: false, message: "user not found" });
-      }
-        const oldImgPublicId = user.profileImgPublicId
-        if (oldImgPublicId) {
-            await cloudinaryInstance.uploader.destroy(oldImgPublicId)
-        }
-        user.profileImg = imgPath
-        user.profileImgPublicId = imgPublicId
-        await user.save()
-        res.status(200).json({success:true,message:"Profile image updated"})
-    } catch (error) {
-        next(error)
+    const oldImgPublicId = user.profileImgPublicId;
+    if (oldImgPublicId) {
+      await cloudinaryInstance.uploader.destroy(oldImgPublicId);
     }
+    user.profileImg = imgPath;
+    user.profileImgPublicId = imgPublicId;
+    await user.save();
+    res.status(200).json({ success: true, message: "Profile image updated" });
+  } catch (error) {
+    next(error);
+  }
 };
 
 //delete account
@@ -93,10 +96,37 @@ const checkUser = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "user is authorized",
-      data: { name: decoded.name, id: decoded.id,role:"user" },
+      data: { name: decoded.name, id: decoded.id, role: "user" },
     });
   } catch (error) {
     next(error);
+  }
+};
+
+const getEnrolledCourses = async (req, res, next) => {
+  const { userId } = req;
+  try {
+    const enrolled = await Enrollment.find({ learner: userId })
+      .populate({
+        path: "course",
+        select: "_id instructor title thumbnail",
+        populate: { path: "instructor", select: "name _id" },
+      })
+      .exec();
+      if(!enrolled){
+        return res.status(404).json({success:false,message:"user not enrolled in any course"})
+      }
+    const courses = enrolled.map((enrolled) => {
+      return {
+        title: enrolled.course.title,
+        id: enrolled.course._id,
+        instructor: enrolled.course.instructor.name,
+        thumbnail: enrolled.course.thumbnail,
+      };
+    });
+    res.status(200).json({success:true,message:"fetched enrolled courses",data:courses})
+  } catch (error) {
+    next(error)
   }
 };
 
@@ -106,5 +136,6 @@ module.exports = {
   updateUserProfileImg,
   deleteUser,
   courseEnrollment,
+  getEnrolledCourses,
   checkUser,
 };

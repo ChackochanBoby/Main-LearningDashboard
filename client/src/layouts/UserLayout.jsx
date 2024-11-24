@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom"
 import PrimarynavBarUser from "../components/PrimarynavBarUser"
-import Footer from "../components/footer"
+import Footer from "../components/Footer"
 import axiosInstance from "../config/axios"
 import {  useDispatch } from 'react-redux'
 import { removeUser, setUser } from '../redux/userSlice'
