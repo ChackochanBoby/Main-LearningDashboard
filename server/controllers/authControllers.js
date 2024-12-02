@@ -55,8 +55,8 @@ const userSignup = async (req, res, next) => {
     });
     res.cookie("tokenUser", token, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
     });
     res.status(201).json({
       success: true,
@@ -117,8 +117,8 @@ const userLogin = async (req, res, next) => {
 
     res.cookie("tokenUser", token, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
     });
 
     res.status(200).json({
@@ -134,8 +134,8 @@ const userLogin = async (req, res, next) => {
 const userLogout = async (req, res, next) => {
   try {
     res.clearCookie("tokenUser", {
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
     });
     res.status(204).send();
   } catch (error) {
@@ -275,8 +275,8 @@ const adminSignup = async (req, res) => {
     });
     res.cookie("tokenAdmin", token, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
     });
     res.status(201).json({
       success: true,
@@ -338,8 +338,8 @@ const adminLogin = async (req, res, next) => {
 
     res.cookie("tokenAdmin", token, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
     });
 
     res.status(200).json({
@@ -355,8 +355,8 @@ const adminLogin = async (req, res, next) => {
 const adminLogout = async (req, res, next) => {
   try {
     res.clearCookie("tokenAdmin", {
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
     });
     res.status(204).send();
   } catch (error) {

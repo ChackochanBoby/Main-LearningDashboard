@@ -52,7 +52,15 @@ const updateUserProfile = async (req, res, next) => {
       .json({ success: false, message: "nothing to update" });
   }
   try {
-    await User.findByIdAndUpdate(userId, { name, bio });
+    const user =await User.findByIdAndUpdate(userId, { name, bio });
+    const token = await generateUserToken({
+      name:user.name,profileImg:user.profileImg,role:"user",id:user._id
+    })
+    res.cookie("tokenUser", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+    });
     res.status(200).json({ success: true, message: "user updated" });
   } catch (error) {
     next(error);
@@ -92,8 +100,8 @@ const updateUserProfileImg = async (req, res, next) => {
     })
     res.cookie("tokenUser", token, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      secure: false,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
     });
     res.status(200).json({ success: true, message: "Profile image updated" });
   } catch (error) {
