@@ -57,6 +57,7 @@ const userSignup = async (req, res, next) => {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
       secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
     res.status(201).json({
       success: true,
@@ -119,6 +120,7 @@ const userLogin = async (req, res, next) => {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
       secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
 
     res.status(200).json({
@@ -136,6 +138,7 @@ const userLogout = async (req, res, next) => {
     res.clearCookie("tokenUser", {
       httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
       secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
     res.status(204).send();
   } catch (error) {
@@ -277,6 +280,7 @@ const adminSignup = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
       secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
     res.status(201).json({
       success: true,
@@ -340,6 +344,7 @@ const adminLogin = async (req, res, next) => {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
       secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
 
     res.status(200).json({
@@ -357,6 +362,7 @@ const adminLogout = async (req, res, next) => {
     res.clearCookie("tokenAdmin", {
       httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
       secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
     res.status(204).send();
   } catch (error) {

@@ -60,6 +60,7 @@ const updateUserProfile = async (req, res, next) => {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
       secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
     res.status(200).json({ success: true, message: "user updated" });
   } catch (error) {
@@ -102,6 +103,7 @@ const updateUserProfileImg = async (req, res, next) => {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
       secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
     res.status(200).json({ success: true, message: "Profile image updated" });
   } catch (error) {
