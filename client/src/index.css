@@ -2,3 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+.lesson-container{
+    @apply mx-auto px-4 py-6 text-left text-base-content;
+    width:fit-content;
+}
+.lesson-container>h1{
+    @apply text-4xl font-extrabold text-center mb-4;
+    letter-spacing: 1px;
+}
+.lesson-container>h2{
+    @apply text-3xl font-semibold text-center mb-3;
+}
+.lesson-container>h3{
+    @apply text-2xl font-medium text-center mb-2;
+}
+.lesson-container>p{
+    @apply text-lg leading-relaxed text-justify mb-6 max-w-[50rem];
+  line-height: 1.8;
+}

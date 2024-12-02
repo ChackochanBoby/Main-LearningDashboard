@@ -95,7 +95,7 @@ const checkAdmin = async (req, res, next) => {
       .json({
         success: true,
         message: `${decoded.role} is authorized`,
-        data: { name: decoded.name, id: decoded.id, role: decoded.role },
+        data: { name: decoded.name, id: decoded.id, role: decoded.role,profileImg:decoded.ProfileImg },
       });
   } catch (error) {
     next(error);

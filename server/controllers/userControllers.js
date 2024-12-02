@@ -2,8 +2,14 @@ const jwt = require("jsonwebtoken");
 const { User } = require("../models/userModel");
 const { cloudinaryInstance } = require("../config/fileUpload");
 const { Enrollment } = require("../models/enrollmentModel");
+const { Course } = require("../models/courseModel");
+const { generateUserToken } = require("../utils/jwt");
 
-// User Profile
+/**
+ * 
+ * controller to get user profile
+ * 
+ */
 const userProfile = async (req, res, next) => {
   const { userId } = req;
   if (!userId) {
@@ -32,7 +38,11 @@ const userProfile = async (req, res, next) => {
   }
 };
 
-//update user profile
+/**
+ * 
+ * controller to update user profile
+ * 
+*/
 const updateUserProfile = async (req, res, next) => {
   const { userId } = req;
   const { name, bio } = req.body;
@@ -49,7 +59,11 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
-//update user profile image
+/**
+ * 
+ * controller to update profile image of user
+ * 
+*/
 const updateUserProfileImg = async (req, res, next) => {
   const { userId } = req;
   const imgPath = req.file?.path;
@@ -73,17 +87,77 @@ const updateUserProfileImg = async (req, res, next) => {
     user.profileImg = imgPath;
     user.profileImgPublicId = imgPublicId;
     await user.save();
+    const token = await generateUserToken({
+      name:user.name,profileImg:user.profileImg,role:"user",id:user._id
+    })
+    res.cookie("tokenUser", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: false,
+      secure: false,
+    });
     res.status(200).json({ success: true, message: "Profile image updated" });
   } catch (error) {
     next(error);
   }
 };
 
-//delete account
+/**
+ * 
+ * controller to delete account
+ * 
+*/
 const deleteUser = async (req, res, next) => {};
-//enroll in course
-const courseEnrollment = async (req, res, next) => {};
-//check user
+
+/**
+ * 
+ * controller to enroll user to a course
+ * 
+ */
+const courseEnrollment = async (req, res, next) => {
+  const {userId}=req
+  const {courseId}=req.params
+  if(!courseId){
+    return res.status(400).json({success:false, message:"course id missing from request"})
+  }
+  try {
+    const courseExists = Course.exists({_id:courseId})
+    if(!courseExists) {
+      return res.status(404).json({success:false, message: "course doesn't exist"})
+    }
+    const isEnrolled = await Enrollment.exists({learner:userId,course:courseId}).exec()
+    if(isEnrolled){
+      return res.status(400).json({success:false,message:"user is already enrolled"})
+    }
+    const newEnrollment = new Enrollment({learner:userId,course:courseId})
+    await newEnrollment.save()
+    res.status(200).json({success:true, message:"user enrolled in course Successfully"})
+  } catch (error) {
+    next(error)
+  }
+};
+
+/**
+ * 
+ * controller to check if user is enrolled in a course returns true or false
+ * 
+ */
+const checkEnrollment=async(req,res,next)=>{
+  const { userId } = req
+  const {courseId} = req.params
+  try {
+    const isEnrolled = await Enrollment.exists({learner:userId,course:courseId}).exec()
+    const data=isEnrolled?true:false
+    res.status(200).json({success:true,data})
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * 
+ * controller that varifies user token and return payload
+ * 
+ */
 const checkUser = async (req, res, next) => {
   const { tokenUser } = req.cookies;
   if (!tokenUser) {
@@ -96,13 +170,18 @@ const checkUser = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "user is authorized",
-      data: { name: decoded.name, id: decoded.id, role: "user" },
+      data: { name: decoded.name, id: decoded.id, role: "user",profileImg:decoded.profileImg },
     });
   } catch (error) {
     next(error);
   }
 };
 
+/**
+ * 
+ * function that gets the enrolled courses of the user
+ * 
+*/
 const getEnrolledCourses = async (req, res, next) => {
   const { userId } = req;
   try {
@@ -120,7 +199,7 @@ const getEnrolledCourses = async (req, res, next) => {
       return {
         title: enrolled.course.title,
         id: enrolled.course._id,
-        instructor: enrolled.course.instructor.name,
+        instructor:{ name:enrolled.course.instructor.name,id:enrolled.course.instructor.id},
         thumbnail: enrolled.course.thumbnail,
       };
     });
@@ -138,4 +217,5 @@ module.exports = {
   courseEnrollment,
   getEnrolledCourses,
   checkUser,
+  checkEnrollment
 };

@@ -9,6 +9,7 @@ const lessonSchema = new mongoose.Schema(
     description: { type: String },
     contentType: { type: String, enum: ["video", "text"], default: "text" },
     content: { type: mongoose.Schema.Types.Mixed },
+    videoPublicId:String
   },
   { timestamps: true }
 );

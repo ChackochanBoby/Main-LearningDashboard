@@ -15,7 +15,7 @@ const UserDashboard = () => {
     setUser(userFromRedux);
   }, [userFromRedux]);
 
-  // Only show the first few courses based on 'showAll'
+
   const visibleCourses = showAll ? courses : courses.slice(0, 4);
 
   return (
@@ -25,19 +25,16 @@ const UserDashboard = () => {
           Hello! <span className="block md:inline text-5xl">{user.name}</span>
         </h1>
       </section>
-
       <section className="xl:container mx-auto py-8 px-8">
-        <div className="w-full">
+        <div className="w-full flex justify-between items-center">
         <h2 className="text-left my-4 text-3xl">My Courses</h2>
-        {(courses.length>0&&!showAll) && (
-          <div className="flex justify-center mt-6">
+        {(courses.length>4&&!showAll) && (
             <button
               onClick={() => setShowAll(true)}
-              className="btn bg-base-300 text-base-content ml-auto"
+              className="link text-base-content"
             >
               View All
             </button>
-          </div>
         )}
         </div>
         {!courses.length>0?<div>

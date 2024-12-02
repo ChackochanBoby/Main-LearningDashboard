@@ -2,11 +2,14 @@ import { useNavigate } from 'react-router-dom';
 
 const CourseCard = ({ course, directTo }) => {
   const navigate = useNavigate();
-
+  const actions=["detail","content"]
+  if(!actions.includes(directTo)){
+    directTo="detail"
+  }
   const cardAction = () => {
     let navigateUrl = `/user/courses/${course.id}`;
-    if (directTo === "details") {
-      navigateUrl += "/details";
+    if (directTo === "content") {
+      navigateUrl += "/course-dashboard";
     }
     navigate(navigateUrl);
   };

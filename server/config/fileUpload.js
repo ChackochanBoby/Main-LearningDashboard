@@ -27,11 +27,15 @@ const videoStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "course-videos",
-    format: async (req, file) => "mp4",
-    public_id: (req, file) =>
-      `Mindspring-course-video-${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`,
+    resource_type: 'video',  // Explicitly set the resource type
+    format: async (req, file) => {
+      if (file.mimetype.startsWith("video/")) {
+        return "mp4";  // Ensures it only processes video files
+      } else {
+        throw new Error("Invalid file type");  // Optional: Prevents non-videos
+      }
+    },
+    public_id: (req, file) => `Mindspring-course-video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
   },
 });
 

@@ -1,10 +1,18 @@
 import { Link } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
+import {  useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 const PrimarynavBarUser = () => {
+  const user = useSelector((state)=>state.user.user)
+  const [profileImg,setProfileImage] = useState(null)
+  useEffect(()=>{
+    setProfileImage(user.profileImg)
+    console.log(user)
+    },[user])
+
   return (
-    <header className="z-10">
-      <div className="drawer xl:container mx-auto">
+    <header className="z-10 drawer">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col text-lg font-semibold">
         {/* Navbar */}
@@ -41,8 +49,32 @@ const PrimarynavBarUser = () => {
               <li>
                 <Link to={"/user/courses"}>Courses</Link>
               </li>
+            </ul>
+          </div>
+          <div className="dropdown dropdown-end">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle avatar"
+            >
+              <div className="w-10 rounded-full">
+                <img
+                  alt="Tailwind CSS Navbar component"
+                  src={profileImg?profileImg:"https://th.bing.com/th?id=OIP.ggX8e6U3YzyhPvp8qGZtQwHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"}
+                />
+              </div>
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+            >
               <li>
-                <Link to={"/user/profile"}>Profile</Link>
+                <a className="justify-between">
+                  Profile
+                </a>
+              </li>
+              <li>
+                <a>Logout</a>
               </li>
             </ul>
           </div>
@@ -52,7 +84,7 @@ const PrimarynavBarUser = () => {
         <label
           htmlFor="my-drawer-3"
           aria-label="close sidebar"
-          className="drawer-overlay"z
+          className="drawer-overlay"
         ></label>
         <ul className="menu bg-base-200 text-primary min-h-full w-80 p-4 text-lg font-semibold focus:*:text-accent">
           {/* Sidebar content here */}
@@ -62,11 +94,7 @@ const PrimarynavBarUser = () => {
           <li>
             <Link to={"/user/courses"}>Courses</Link>
           </li>
-          <li>
-            <Link to={"/user/profile"}>Profile</Link>
-          </li>
         </ul>
-      </div>
       </div>
     </header>
   );

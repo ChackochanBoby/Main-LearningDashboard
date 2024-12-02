@@ -1,6 +1,7 @@
 const { Course } = require("../models/courseModel");
 const { cloudinaryInstance } = require("../config/fileUpload");
 const { CourseModule } = require("../models/courseModuleModel");
+const {Enrollment}= require("../models/enrollmentModel");
 
 //create course
 const createCourse = async (req, res, next) => {
@@ -147,10 +148,6 @@ const getCourseDetails = async (req, res, next) => {
   }
   try {
     const course = await Course.findById(courseId)
-      .populate({
-        path: "modules",
-        select: "title _id",
-      })
       .populate({ path: "instructor", select: "name bio profileImg _id" })
       .exec();
     if (!course) {
@@ -165,6 +162,26 @@ const getCourseDetails = async (req, res, next) => {
     next(error);
   }
 };
+
+const getCourseContentForLearners=async (req,res,next)=>{
+  const { userId } = req
+  const {courseId} = req.params
+  try {
+    const course = await Course.findById(courseId).populate({path:"modules",select:"_id title description lessons",populate:{path:"lessons",select:"_id title"}}).exec()
+    if(!Course){
+      return res.status(404).json({success:false,message:"course not found"})
+    }
+
+    const isEnrolled= await Enrollment.find({learner:userId,course:courseId}).exec()
+    if(!isEnrolled){
+      return res.status(401).json({success:false,message:"only enrolled users can access the contents"})
+    }
+    res.status(200).json({success: true, message: "fetched course contents",data:course})
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getCourseDetailsForAdmins = async (req, res, next) => {
   const { courseId } = req.params;
   const { admin } = req;
@@ -408,6 +425,7 @@ module.exports = {
   getCourseDetails,
   getAllCourses,
   getCourseDetailsForAdmins,
+  getCourseContentForLearners,
   getPublishedCourses,
   reviewCourse,
   coursesToBeReviewed,

@@ -51,6 +51,7 @@ const userSignup = async (req, res, next) => {
     const token = await generateUserToken({
       id: newUser._id,
       name: newUser.name,
+      profileImg:newUser.profileImg
     });
     res.cookie("tokenUser", token, {
       maxAge: 24 * 60 * 60 * 1000,
@@ -111,6 +112,7 @@ const userLogin = async (req, res, next) => {
     const token = await generateUserToken({
       id: userExists._id,
       name: userExists.name,
+      profileImg:userExists.profileImg
     });
 
     res.cookie("tokenUser", token, {
@@ -269,6 +271,7 @@ const adminSignup = async (req, res) => {
       id: newAdmin._id,
       name: newAdmin.name,
       role: newAdmin.role,
+      profileImg:newAdmin.profileImg
     });
     res.cookie("tokenAdmin", token, {
       maxAge: 24 * 60 * 60 * 1000,
@@ -330,6 +333,7 @@ const adminLogin = async (req, res, next) => {
       id: adminExists._id,
       name: adminExists.name,
       role: adminExists.role,
+      profileImg:adminExists.profileImg
     });
 
     res.cookie("tokenAdmin", token, {

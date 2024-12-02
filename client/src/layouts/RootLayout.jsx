@@ -6,7 +6,7 @@ const RootLayout = () => {
     const location=useLocation()
     const authRoutes=["/user/login","/user/signup","/admin/login/","/admin/signup"]
   return (
-    <div className='w-full grid grid-rows-[min_content_1fr_min-content'>
+    <div className='w-full h-screen grid grid-rows-[min_content_1fr_min-content'>
     <header className="bg-base-100 w-full">
       <div className="xl:container navbar justify-between px-8 mx-auto">
         <Link className="text-2xl font-extrabold text-base-content">
