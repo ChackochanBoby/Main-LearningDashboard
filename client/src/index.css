@@ -20,3 +20,11 @@
     @apply text-lg leading-relaxed text-justify mb-6 max-w-[50rem];
   line-height: 1.8;
 }
+
+.Outlined{
+    border:2px solid red;
+    overflow-x: hidden;
+}
+.Outlined >*{
+    border:2px solid greenyellow;
+}
