@@ -8,7 +8,7 @@ import instructorDashboardLoader from "../loaders/instructorDashboardLoader"
 import ManageCoursePage from "../pages/ManageCoursePage"
 import manageCoursePageLoader from "../loaders/manageCoursePageLoader"
 import CourseDashboardAdmin from "../pages/CourseDashboardAdmin"
-import courseDashboardPageLoaderAdmin from "../loaders/courseDashboardpageLoaderAdmin"
+import courseDashboardPageLoaderAdmin from "../loaders/courseDashboardPageLoaderAdmin"
 import LessonPage from "../pages/LessonPage"
 import lessonLoaderAdmin from "../loaders/lessonLoaderAdmin"
 
