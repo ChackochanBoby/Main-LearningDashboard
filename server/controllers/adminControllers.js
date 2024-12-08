@@ -45,7 +45,16 @@ const updateAdminProfile = async (req, res, next) => {
       .json({ success: false, message: "nothing to update" });
   }
   try {
-    await Admin.findByIdAndUpdate(adminData.id, { name, bio });
+    const admin = await Admin.findByIdAndUpdate(adminData.id, { name, bio });
+    const token = await generateUserToken({
+      name:admin.name,profileImg:admin.profileImg,role:admin.role,id:admin._id
+    })
+    res.cookie("tokenAdmin", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
+    });
     res.status(200).json({ success: true, message: "admin updated" });
   } catch (error) {
     next(error);
