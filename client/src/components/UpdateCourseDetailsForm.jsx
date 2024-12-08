@@ -14,7 +14,7 @@ function UpdateCourseForm({ courseId }) {
 
   useEffect(() => {
     if (courseId) {
-      const url = `/courses/${courseId}`; // Endpoint to fetch course details
+      const url = `/courses/${courseId}/manage`; // Endpoint to fetch course details
 
       axiosInstance
         .get(url)
