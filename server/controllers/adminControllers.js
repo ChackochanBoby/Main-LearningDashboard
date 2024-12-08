@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { Admin } = require("../models/adminModel");
 const {cloudinaryInstance} = require("../config/fileUpload");
 const { Course } = require("../models/courseModel");
+const {generateAdminToken} = require("../utils/jwt")
 
 // User Profile
 const adminProfile = async (req, res, next) => {
@@ -46,7 +47,7 @@ const updateAdminProfile = async (req, res, next) => {
   }
   try {
     const admin = await Admin.findByIdAndUpdate(adminData.id, { name, bio });
-    const token = await generateUserToken({
+    const token = await generateAdminToken({
       name:admin.name,profileImg:admin.profileImg,role:admin.role,id:admin._id
     })
     res.cookie("tokenAdmin", token, {
@@ -83,7 +84,7 @@ const updateAdminProfileImg = async (req, res, next) => {
     admin.profileImg = imgPath;
     admin.profileImgPublicId = imgPublicId;
     await admin.save();
-    const token = await generateUserToken({
+    const token = await generateAdminToken({
       name:admin.name,profileImg:admin.profileImg,role:admin.role,id:admin._id
     })
     res.cookie("tokenAdmin", token, {
