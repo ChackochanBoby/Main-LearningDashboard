@@ -1,7 +1,7 @@
 const { Lesson } = require("../models/lessonModel");
 const { CourseModule } = require("../models/courseModuleModel");
 const { Enrollment } = require("../models/enrollmentModel");
-const cloudinaryInstance=require("../config/fileUpload")
+const {cloudinaryInstance} = require("../config/fileUpload")
 
 const createLesson = async (req, res, next) => {
   const instructor = req.admin;
@@ -156,38 +156,22 @@ const deleteLesson = async (req, res) => {
 
   try {
     // Find the lesson by its ID
-    const lesson = await Lesson.findById(lessonId);
+    const lesson = await Lesson.findById(lessonId).exec();
 
     if (!lesson) {
       return res.status(404).json({ message: "Lesson not found" });
     }
-
-    // Find the associated module and course to check authorization
-    const module = await CourseModule.findById(lesson.module);
-    const course = await Course.findById(module.course);
-
-    // Check if the admin is authorized to delete the lesson
-    if (
-      adminRole === "admin" ||
-      (adminRole === "instructor" &&
-        course.instructor.toString() === adminId.toString())
-    ) {
-      // If the lesson is a video, delete it from Cloudinary
-      if (lesson.contentType === "video" && lesson.videoPublicId) {
-        await cloudinaryInstance.uploader.destroy(lesson.videoPublicId); // Delete video from Cloudinary
-      }
-
-      // Delete the lesson
+    if(adminRole!=="admin"&&adminId!==lesson.instructor.toString()){
+      return res.status(401).json({success:false,message:"you are not authorized to delete this Lesson"})
+    }
+    if(lesson.contentType==="video"){
+      await cloudinaryInstance.uploader.destroy({public_id:lesson.videoPublicId});
+    }
       await Lesson.findByIdAndDelete(lessonId);
-
       return res
         .status(200)
-        .json({ message: "Lesson and related video deleted successfully" });
-    } else {
-      return res
-        .status(403)
-        .json({ message: "Unauthorized to delete this lesson" });
-    }
+        .json({ message: "Lesson deleted successfully" });
+  
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error deleting lesson" });

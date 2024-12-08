@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import DOMPurify from "dompurify";
 import parse from "html-react-parser";
-import { useLoaderData, useLocation } from "react-router-dom";
+import { Link, useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import VideoPlayer from "../components/VideoPlayer";
+import axiosInstance from "../config/axios"
 
 const LessonPage = () => {
   const { lesson, error } = useLoaderData();
   const [lessonContent, setLessonContent] = useState(null);
   const { contentType, content, title } = lesson;
+  const navigate=useNavigate()
   const location = useLocation();
 
   // Check if the user is an admin or instructor based on the URL
@@ -23,14 +25,18 @@ const LessonPage = () => {
     }
   }, [content, contentType]);
 
-  const handleUpdate = () => {
-    // Handle update logic here
-    alert("Update lesson functionality will be implemented");
-  };
+  
 
-  const handleDelete = () => {
-    // Handle delete logic here
-    alert("Delete lesson functionality will be implemented");
+  const handleDelete =async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this course?");
+    if (confirmDelete) {
+      try {
+        await axiosInstance.delete(`/lessons/${lesson._id}`)
+        navigate(-1)
+      } catch (error) {
+        console.error("Error deleting course:", error);
+      }
+    }
   };
 
   if (error) {
@@ -81,12 +87,12 @@ const LessonPage = () => {
         {/* Buttons for Admin/Instructor */}
         {(isAdminRoute || isInstructorRoute)? (
           <div className="flex justify-center p-4">
-            <button
-              onClick={handleUpdate}
+            <Link
+             to={`/${isAdminRoute?"admin":"instructor"}/${lesson._id}/update`}
               className="px-6 py-2 bg-blue-500 text-white rounded-lg mx-2"
             >
               Update Lesson
-            </button>
+            </Link>
             <button
               onClick={handleDelete}
               className="px-6 py-2 bg-red-500 text-white rounded-lg mx-2"

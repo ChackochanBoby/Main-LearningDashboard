@@ -2,6 +2,7 @@ import { useState } from "react";
 import ModuleAccordionAdmin from "../components/ModuleAccordionAdmin";
 import { useLoaderData, useLocation } from "react-router-dom";
 import Modal from "../components/Modal";
+import CreateModuleForm from "../components/CreateModuleForm";
 
 const CourseDashboardAdmin = () => {
   const { courseContent, error } = useLoaderData();
@@ -41,7 +42,7 @@ const CourseDashboardAdmin = () => {
           Add Module
         </button>
         <Modal isOpen={isModalOpen} modalControl={setModalOpen}>
-           
+           <CreateModuleForm courseId={courseContent._id}/>
         </Modal>
       </section>):null}
     </main>

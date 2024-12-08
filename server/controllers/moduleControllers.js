@@ -145,4 +145,29 @@ const deleteModule = async (req, res) => {
     }
   };
 
-module.exports={createModule,updateModule,getModuleForEnrolledUsers,deleteModule}
+  const getModuleForAdminAndInstructor = async (req, res, next) => {
+    const { moduleId } = req.params
+    const { id,role } = req.admin
+    if (!moduleId) {
+        return res.status(400).json({success: false , message:"missing module id "})
+    }
+    if (!id) {
+        return res.status(400).json({success:false , message:"missing admin id "})
+    }
+    try {
+        const module = await CourseModule.findById(moduleId).populate({path:"lessons",select:"title _id"}).exec()
+        if (!module) {
+            return res.status(404).json({success:false,message:"module not found"})
+        }
+        if(role!=="admin"&&id!==module.instructor.toString()){
+            return res.status(401).json({success:false,message:"you are not authorized to update this course"})
+        }
+        res.status(200).json({success:true,message:"fetched module",data:module})
+        
+    } catch (error) {
+        next()
+    }
+}
+
+
+module.exports={createModule,updateModule,getModuleForEnrolledUsers,getModuleForAdminAndInstructor,deleteModule}
