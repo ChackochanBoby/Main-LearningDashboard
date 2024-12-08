@@ -64,7 +64,7 @@ const updateAdminProfileImg = async (req, res, next) => {
   }
   try {
     const admin = await Admin.findById(adminData.id).exec();
-    if (!user) {
+    if (!admin) {
       return res.status(404).json({success:false,message:"user not found"})
     }
     const oldImgPublicId = admin.profileImgPublicId;
