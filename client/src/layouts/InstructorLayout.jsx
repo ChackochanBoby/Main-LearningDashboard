@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { removeAdmin, setAdmin } from "../redux/userSlice";
-import PrimarynavBarInstructor from "../components/PrimarynavBarInstructor";
+import PrimaryNavbarInstructor from "../components/PrimaryNavbarInstructor";
 import Footer from "../components/Footer";
 import axiosInstance from "../config/axios";
 
