@@ -39,7 +39,7 @@ const InstructorLayout = () => {
 
   return (
     <div className="grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen overflow-hidden">
-          <PrimarynavBarInstructor />
+          <PrimaryNavbarInstructor />
           <Outlet />
           <Footer/>
     </div>
