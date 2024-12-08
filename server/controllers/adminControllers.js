@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { Admin } = require("../models/adminModel");
-const {cloudinaryInstance} = require("../config/fileUpload")
+const {cloudinaryInstance} = require("../config/fileUpload");
+const { Course } = require("../models/courseModel");
 
 // User Profile
 const adminProfile = async (req, res, next) => {
@@ -25,7 +26,7 @@ const adminProfile = async (req, res, next) => {
         name: admin.name,
         email: admin.email,
         role: admin.role,
-        profileImag: admin.profileImg,
+        profileImg: admin.profileImg,
         bio: admin.bio,
       },
     });
@@ -95,12 +96,29 @@ const checkAdmin = async (req, res, next) => {
       .json({
         success: true,
         message: `${decoded.role} is authorized`,
-        data: { name: decoded.name, id: decoded.id, role: decoded.role,profileImg:decoded.ProfileImg },
+        data: { name: decoded.name, id: decoded.id, role: decoded.role,profileImg:decoded.profileImg },
       });
   } catch (error) {
     next(error);
   }
 };
+
+const getInstructorManagedCourses=async (req,res,next)=>{
+  const instructorId=req.admin.id
+  try {
+    const managedCourses= await Course.find({instructor:instructorId}).populate({path:"instructor",select:"_id name"}).exec()
+    if(!managedCourses||!Array.isArray(managedCourses)){
+      return res.status(404).json({success:false,message:"no courses to be found"})
+    }
+    const managedCoursesMapped=managedCourses.map((course)=>{return {
+      id:course._id,title:course.title,thumbnail:course.thumbnail,instructor:course.instructor
+    }})
+    res.status(200).json({success:true,message:"fetched managed courses",data:managedCoursesMapped})
+    
+  } catch (error) {
+    next(error)
+  }
+}
 
 
 module.exports = {
@@ -108,4 +126,5 @@ module.exports = {
   updateAdminProfile,
   updateAdminProfileImg,
   checkAdmin,
+  getInstructorManagedCourses
 };

@@ -10,6 +10,9 @@ const ErrorPage = () => {
   if(location.pathname.startsWith("/admin")){
     homeUrl="/admin"
   }
+  if(location.pathname.startsWith("/instructor")){
+    homeUrl="/instructor"
+  }
   console.error(error);
     return (
         <div className="flex items-center justify-center min-h-screen bg-base-100" id="error-page">

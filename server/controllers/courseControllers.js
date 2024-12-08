@@ -7,90 +7,127 @@ const {Enrollment}= require("../models/enrollmentModel");
 const createCourse = async (req, res, next) => {
   const { admin } = req;
   const { title, description, price } = req.body;
+
   if (!title) {
     return res
       .status(400)
       .json({ success: false, message: "title field is required" });
   }
 
-  if (price !== undefined && (typeof price !== "number" || price < 0)) {
+  if (typeof price !== "number" || price <= 0) {
     return res
       .status(400)
-      .json({ success: false, message: "Price must be a non-negative number" });
+      .json({ success: false, message: "Price must be a positive number" });
   }
 
+  // Create the new course
   const newCourse = new Course({
     title,
     instructor: admin.id,
     description,
-    price: price ?? 0,
+    price, 
   });
+
   try {
     await newCourse.save();
     res
       .status(200)
-      .json({ success: true, message: "course created", data: newCourse });
+      .json({ success: true, message: "Course created", data: newCourse });
   } catch (error) {
     next(error);
   }
 };
+
 //update course info
 const updateCourse = async (req, res, next) => {
+  console.log("Update course endpoint hit");
   const { admin } = req;
   const { courseId } = req.params;
   const { title, description, price } = req.body;
+
+  // Ensure courseId is provided
   if (!courseId) {
-    return res
-      .status(400)
-      .json({ success: false, message: "course id missing" });
-  }
-  if (!title && !description && !price) {
-    return res
-      .status(400)
-      .json({ success: false, message: "no fields to update" });
+    return res.status(400).json({
+      success: false,
+      message: "Course ID is required",
+    });
   }
 
+  // Ensure at least one field (title, description, or price) is provided
+  if (!title && !description && price === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: "At least one field (title, description, or price) must be provided for update",
+    });
+  }
+
+  // Validate title (if provided)
   if (title && typeof title !== "string") {
-    return res
-      .status(400)
-      .json({ success: false, message: "Title must be a string" });
+    return res.status(400).json({
+      success: false,
+      message: "Title must be a non-empty string",
+    });
   }
 
-  if (price !== undefined && (typeof price !== "number" || price < 0)) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Price must be a non-negative number" });
+  // Validate price (if provided)
+  if (price !== undefined) {
+    const parsedPrice = parseFloat(price); // Ensure price is parsed as a number
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Price must be a positive number",
+      });
+    }
   }
+
   try {
+    // Find course by ID
     const courseToUpdate = await Course.findById(courseId).exec();
 
+    // If course is not found, return 404
     if (!courseToUpdate) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Course not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
     }
 
+    // Authorization check: Instructors can only update their own courses
     if (
       admin.role === "instructor" &&
       admin.id !== courseToUpdate.instructor.toString()
     ) {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
-        message: "not authorized to update this course",
+        message: "Not authorized to update this course",
       });
     }
-    courseToUpdate.title = title ?? courseToUpdate.title;
-    courseToUpdate.description = description ?? courseToUpdate.description;
-    courseToUpdate.price = price ?? courseToUpdate.price;
 
-    await courseToUpdate.save();
-    res
-      .status(200)
-      .json({ success: true, message: "course updated", data: courseToUpdate });
+    // Update course fields
+    if (title) courseToUpdate.title = title.trim();
+    if (description) courseToUpdate.description = description.trim();
+    if (price !== undefined) courseToUpdate.price = parseFloat(price);
+
+    // Save updated course
+    const updatedCourse = await courseToUpdate.save();
+
+    // Send response back with updated course data
+    res.status(200).json({
+      success: true,
+      message: "Course updated successfully",
+      data: {
+        id: updatedCourse._id,
+        title: updatedCourse.title,
+        description: updatedCourse.description,
+        price: updatedCourse.price,
+      },
+    });
   } catch (error) {
-    next(error);
+    console.error("Error updating course:", error);
+    next(error); // Pass error to global error handler
   }
 };
+
 
 //update course image
 const updateCourseImg = async (req, res, next) => {
@@ -197,10 +234,6 @@ const getCourseDetailsForAdmins = async (req, res, next) => {
   }
   try {
     const course = await Course.findById(courseId)
-      .populate({
-        path: "modules",
-        select: "title _id",
-      })
       .populate({ path: "instructor", select: "name bio profileImg _id" })
       .exec();
     if (!course) {
@@ -208,7 +241,7 @@ const getCourseDetailsForAdmins = async (req, res, next) => {
         .status(404)
         .json({ success: false, message: "course not found" });
     }
-    if (admin.role === "instructor" && admin.role !== course.instructor._id) {
+    if (admin.role === "instructor" && admin.id !== course.instructor._id.toString()) {
       return res
         .status(401)
         .json({ success: false, message: "unauthorized access" });
@@ -221,7 +254,65 @@ const getCourseDetailsForAdmins = async (req, res, next) => {
   }
 };
 
-//delete course
+//course content for admin and instructor access
+const getCourseContentForAdminsAndInstructor = async (req, res, next) => {
+  const { id: adminId, role } = req.admin; // Get adminId and role from the request object
+  const { courseId } = req.params; // Get courseId from the URL parameters
+
+  try {
+    // Find the course by ID and populate modules and lessons
+    const course = await Course.findById(courseId)
+      .populate({
+        path: "modules",
+        select: "_id title description lessons",
+        populate: {
+          path: "lessons",
+          select: "_id title instructor",
+        },
+      })
+      .exec();
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    // Check if the role is 'admin' or 'instructor'
+    if (role === "admin") {
+      // If the user is an admin, no further verification is needed
+      return res.status(200).json({
+        success: true,
+        message: "Fetched course contents",
+        data: course,
+      });
+    }
+
+    // If the role is 'instructor', verify if the admin is the instructor of the course
+    const isInstructor = course.modules.some(module => 
+      module.lessons.some(lesson => 
+        lesson.instructor.toString() === adminId.toString()
+      )
+    );
+
+    if (!isInstructor) {
+      return res.status(403).json({
+        success: false,
+        message: "Only the instructor of the course can access the contents",
+      });
+    }
+
+    // If the admin is the instructor or the user is an admin, send the course content
+    res.status(200).json({
+      success: true,
+      message: "Fetched course contents",
+      data: course,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 //get all published course courses
 const getPublishedCourses = async (req, res, next) => {
@@ -418,6 +509,54 @@ const reviewCourse = async (req, res, next) => {
   }
 };
 
+const deleteCourse = async (req, res) => {
+  const { courseId } = req.params;
+  const adminId = req.admin.id;
+  const adminRole = req.admin.role;
+
+  try {
+    // Find the course by its ID
+    const course = await Course.findById(courseId).populate("modules");
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Check if the admin is authorized to delete the course
+    if (adminRole === "admin" || (adminRole === "instructor" && course.instructor.toString() === adminId)) {
+      // Delete related modules and lessons
+      for (const moduleId of course.modules) {
+        const module = await CourseModule.findById(moduleId).populate("lessons");
+
+        // Delete lessons and video content from Cloudinary
+        for (const lesson of module.lessons) {
+          if (lesson.contentType === "video" && lesson.videoPublicId) {
+            await cloudinaryInstance.uploader.destroy(lesson.videoPublicId); // Delete video from Cloudinary
+          }
+        }
+
+        // Delete the module itself
+        await CourseModule.findByIdAndDelete(moduleId);
+      }
+
+      // Delete thumbnail from Cloudinary
+      if (course.thumbnailPublicId) {
+        await cloudinaryInstance.uploader.destroy(course.thumbnailPublicId); // Delete thumbnail from Cloudinary
+      }
+
+      // Finally, delete the course
+      await Course.findByIdAndDelete(courseId);
+
+      return res.status(200).json({ message: "Course and related resources deleted successfully" });
+    } else {
+      return res.status(403).json({ message: "Unauthorized to delete this course" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error deleting course" });
+  }
+};
+
 module.exports = {
   createCourse,
   updateCourse,
@@ -430,4 +569,6 @@ module.exports = {
   reviewCourse,
   coursesToBeReviewed,
   addForReview,
+  deleteCourse,
+  getCourseContentForAdminsAndInstructor
 };

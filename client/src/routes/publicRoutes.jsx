@@ -4,6 +4,7 @@ import LandingPage from "../pages/LandingPage";
 import RootLayout from "../layouts/RootLayout";
 import ErrorPage from "../pages/ErrorPage";
 import LoginPageAdmin from "../pages/LoginPageAdmin";
+import AdminSignupPage from "../pages/AdminSignupPage";
 
 const publicRoutes=[{
     path: "/",
@@ -28,7 +29,7 @@ const publicRoutes=[{
       },
       {
         path: "/management/signup",
-        element: <SignupPageUser />,
+        element: <AdminSignupPage />,
       },
     ],
   }]

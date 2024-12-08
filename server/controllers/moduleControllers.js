@@ -1,6 +1,8 @@
 const { Course } = require("../models/courseModel")
 const { CourseModule } = require("../models/courseModuleModel")
 const {Enrollment}=require("../models/enrollmentModel")
+const cloudinaryInstance = require("../config/fileUpload")
+
 const createModule = async (req, res, next) => {
     const { admin } = req
     const { courseId } = req.params
@@ -106,4 +108,41 @@ const getModuleForEnrolledUsers = async (req, res, next) => {
     }
 }
 
-module.exports={createModule,updateModule,getModuleForEnrolledUsers}
+const deleteModule = async (req, res) => {
+    const { moduleId } = req.params;
+    const adminId = req.admin.id;
+    const adminRole = req.admin.role;
+  
+    try {
+      // Find the module by its ID and populate lessons
+      const module = await CourseModule.findById(moduleId).populate("lessons");
+  
+      if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+      }
+  
+      // Check if the admin is authorized to delete the module
+      const course = await Course.findById(module.course); // Get the associated course
+  
+      if (adminRole === "admin" || (adminRole === "instructor" && course.instructor.toString() === adminId.toString())) {
+        // Delete video lessons from Cloudinary
+        for (const lesson of module.lessons) {
+          if (lesson.contentType === "video" && lesson.videoPublicId) {
+            await cloudinaryInstance.uploader.destroy(lesson.videoPublicId); // Delete video from Cloudinary
+          }
+        }
+  
+        // Delete the module
+        await CourseModule.findByIdAndDelete(moduleId);
+  
+        return res.status(200).json({ message: "Module and related resources deleted successfully" });
+      } else {
+        return res.status(403).json({ message: "Unauthorized to delete this module" });
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Error deleting module" });
+    }
+  };
+
+module.exports={createModule,updateModule,getModuleForEnrolledUsers,deleteModule}

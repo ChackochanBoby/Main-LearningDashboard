@@ -285,6 +285,7 @@ const adminSignup = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "instructor/admin successfully created",
+      data:{role:newAdmin.role}
     });
   } catch (error) {
     next(error);
@@ -350,6 +351,7 @@ const adminLogin = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "login successfull",
+      data:{role:adminExists.role}
     });
   } catch (error) {
     next(error);

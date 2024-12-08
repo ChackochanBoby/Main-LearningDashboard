@@ -2,13 +2,13 @@ import { Link } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
 import {  useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import LogoutButton from "./LogoutButton";
 
 const PrimarynavBarUser = () => {
   const user = useSelector((state)=>state.user.user)
   const [profileImg,setProfileImage] = useState(null)
   useEffect(()=>{
     setProfileImage(user.profileImg)
-    console.log(user)
     },[user])
 
   return (
@@ -42,7 +42,6 @@ const PrimarynavBarUser = () => {
           <ThemeSwitcher/>
           <div className="hidden flex-none lg:block">
             <ul className="menu menu-horizontal text-primary hover:*:text-accent">
-              {/* Navbar menu content here */}
               <li>
                 <Link to={"/user"}>Dashboard</Link>
               </li>
@@ -69,12 +68,12 @@ const PrimarynavBarUser = () => {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a className="justify-between">
+                <Link to={"/user/profile"} className="justify-between">
                   Profile
-                </a>
+                </Link>
               </li>
               <li>
-                <a>Logout</a>
+              <LogoutButton/>
               </li>
             </ul>
           </div>

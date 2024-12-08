@@ -10,6 +10,8 @@ import courseDetailsLoader from "../loaders/courseDetailsLoader";
 import courseDashboardPageLoader from "../loaders/courseDasboardPageLoader";
 import LessonPage from "../pages/LessonPage";
 import lessonLoader from "../loaders/lessonLoader"
+import ProfilePage from "../pages/ProfilePage";
+import profilePageLoaderUser from "../loaders/profilePageLoaderUser";
 
 const userRoutes=[
   {
@@ -37,6 +39,11 @@ const userRoutes=[
         path:"course-dashboard/lesson/:lessonId",
         element:<LessonPage/>,
         loader: lessonLoader
+      },
+      {
+        path:"profile",
+        element:<ProfilePage/>,
+        loader: profilePageLoaderUser
       }
     ],
   }

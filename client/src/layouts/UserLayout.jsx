@@ -29,7 +29,7 @@ const UserLayout = () => {
   },[location.pathname])
 
   return (
-      <div className="grid grid-rows-[min-content_1fr_min-content] min-h-screen">
+      <div className="grid grid-rows-[min-content_1fr_min-content] min-h-screen overflow-hidden">
           <PrimarynavBarUser />
           <Outlet />
           <Footer/>

@@ -20,8 +20,4 @@ router.use("/lessons", lessonRouter);
 router.use("/quiz", quizRouter);
 router.use("/assignment", assignmentRouter);
 
-//for middleware testing (to be removed)
-router.get("/",userAuth,(req,res)=>res.send(req.userId))
-router.get("/ad",adminAuth,(req,res)=>res.send(req.admin))
-
 module.exports = router;

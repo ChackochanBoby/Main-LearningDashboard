@@ -6,11 +6,13 @@ import { Provider } from "react-redux";
 import userRoutes from "./routes/userRoutes";
 import publicRoutes from "./routes/publicRoutes";
 import adminRoutes from "./routes/adminRoutes";
+import InstructorRoutes from "./routes/instructorRoutes";
 
 const router = createBrowserRouter([
   ...publicRoutes,
   ...userRoutes,
   ...adminRoutes,
+  ...InstructorRoutes
 ]);
 
 createRoot(document.getElementById("root")).render(

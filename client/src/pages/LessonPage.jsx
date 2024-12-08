@@ -1,22 +1,37 @@
 import { useState, useEffect } from "react";
 import DOMPurify from "dompurify";
 import parse from "html-react-parser";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useLocation } from "react-router-dom";
 import VideoPlayer from "../components/VideoPlayer";
 
 const LessonPage = () => {
   const { lesson, error } = useLoaderData();
   const [lessonContent, setLessonContent] = useState(null);
-  const { contentType, content,title } = lesson;
-  const lessonId = lesson._id
+  const { contentType, content, title } = lesson;
+  const location = useLocation();
+
+  // Check if the user is an admin or instructor based on the URL
+  const isAdminRoute = location.pathname.includes("/admin");
+  const isInstructorRoute = location.pathname.includes("/instructor");
+
   useEffect(() => {
     if (contentType === "video") {
       setLessonContent(content);
     } else {
-      const parsedlesson = JSON.parse(content);
-      setLessonContent(parsedlesson);
+      const parsedLesson = JSON.parse(content);
+      setLessonContent(parsedLesson);
     }
   }, [content, contentType]);
+
+  const handleUpdate = () => {
+    // Handle update logic here
+    alert("Update lesson functionality will be implemented");
+  };
+
+  const handleDelete = () => {
+    // Handle delete logic here
+    alert("Delete lesson functionality will be implemented");
+  };
 
   if (error) {
     return <div>{error}</div>;
@@ -57,9 +72,29 @@ const LessonPage = () => {
         ) : (
           <div className="w-full h-full">
             <h1 className="text-4xl font-extrabold text-center mb-4">{title}</h1>
-            <div className="mx-auto w-full max-w-screen-md aspect-video"><VideoPlayer videoUrl={lessonContent} /></div>
+            <div className="mx-auto w-full max-w-screen-md aspect-video">
+              <VideoPlayer videoUrl={lessonContent} />
+            </div>
           </div>
-          )}
+        )}
+
+        {/* Buttons for Admin/Instructor */}
+        {(isAdminRoute || isInstructorRoute)? (
+          <div className="flex justify-center p-4">
+            <button
+              onClick={handleUpdate}
+              className="px-6 py-2 bg-blue-500 text-white rounded-lg mx-2"
+            >
+              Update Lesson
+            </button>
+            <button
+              onClick={handleDelete}
+              className="px-6 py-2 bg-red-500 text-white rounded-lg mx-2"
+            >
+              Delete Lesson
+            </button>
+          </div>
+        ):(<button className="btn btn-success">Mark as completed</button>)}
       </section>
     </main>
   );

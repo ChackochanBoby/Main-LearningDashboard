@@ -8,19 +8,20 @@ const LoginPageAdmin = () => {
 
   const onSubmit = async (data) => {
     try {
-      await axiosInstance.post("/auth/admin/login", data);
-      navigate("/admin/");
+      const response = await axiosInstance.post("/auth/admin/login", data);
+      const role=response.data.data.role
+      navigate(`/${role}`);
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <main className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
-      <div className="flex flex-col bg-white gap-y-8 w-full max-w-md mx-auto py-6 md:py-10 px-6 md:px-12 rounded-2xl shadow-lg">
+    <main className="flex justify-center mt-8 md:mt-0 md:items-center md:min-h-screen bg-base-100 px-4">
+      <div className="flex flex-col gap-y-8 w-full max-w-md mx-auto py-6 md:py-10 px-6 md:px-12 rounded-2xl shadow-lg">
         <div className="flex flex-col gap-1 text-center">
           <h1 className="text-2xl md:text-3xl font-bold">Login to MindSpring</h1>
-          <span className="text-lg font-semibold text-gray-600">Admin</span>
+          <span className="text-lg font-semibold text-base-content">Admin/Instructor</span>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <label className="input input-bordered flex items-center gap-3 px-4 py-3">
@@ -57,7 +58,7 @@ const LoginPageAdmin = () => {
 
         <p className="text-center text-gray-600 text-sm">
           Don&apos;t have an Account?{' '}
-          <Link to="/admin/signup" className="link link-primary underline">
+          <Link to="/management/signup" className="link link-primary underline">
             Sign Up
           </Link>
         </p>

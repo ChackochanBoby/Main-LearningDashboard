@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { Link,useNavigate } from "react-router-dom";
 import axiosInstance from "../config/axios";
 
-const SignupPageUser = () => {
+const AdminSignupPage = () => {
   const {
     register,
     handleSubmit,
@@ -10,12 +10,12 @@ const SignupPageUser = () => {
     formState: { errors },
   } = useForm();
 
-
   const navigate=useNavigate()
   const onSubmit = async (data) => {
     try {
-      await axiosInstance.post("/auth/user/register", data)
-      navigate("/user")
+     const response = await axiosInstance.post("/auth/admin/register", data)
+     const role=response.data.data.role
+      navigate(`/${role}`)
     } catch (error) {
       console.log(error)
     }
@@ -29,7 +29,7 @@ const SignupPageUser = () => {
     <main className="flex items-center justify-center min-h-screen bg-base-100">
   <div className="flex flex-col py-16 gap-8 w-full md:w-1/2 xl:w-2/5 2xl:w-2/5 3xl:w-1/3 mx-auto p-8 md:p-10 2xl:p-12 3xl:p-14 rounded-2xl shadow-xl">
     <div className="flex flex-row gap-3 pb-4">
-      <h1 className="text-2xl md:text-3xl font-bold">Signup to MindSpring</h1>
+      <h1 className="text-2xl md:text-3xl font-bold">Signup to MindSpring <span className="text-lg font-semibold text-base-content">Instructor</span></h1>
     </div>
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
       <label className="input input-bordered flex items-center gap-2">
@@ -69,7 +69,7 @@ const SignupPageUser = () => {
     </form>
     <p className="text-center">
       Already have an Account?{" "}
-      <Link to={"/user/login"} className="link link-primary">
+      <Link to={"/management/login"} className="link link-primary">
         Login
       </Link>
     </p>
@@ -79,4 +79,4 @@ const SignupPageUser = () => {
   );
 };
 
-export default SignupPageUser;
+export default AdminSignupPage;

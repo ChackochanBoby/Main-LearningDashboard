@@ -29,7 +29,7 @@ const userProfile = async (req, res, next) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        profileImag: user.profileImg,
+        profileImg: user.profileImg,
         bio: user.bio,
       },
     });

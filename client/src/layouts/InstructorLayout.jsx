@@ -1,22 +1,19 @@
-import AdminNavbar from "../components/AdminNavbar";
-import Footer from "../components/Footer";
-import BottomNavigation from "../components/BottomNavigation";
-import Sidebar from "../components/Sidebar";
-import axiosInstance from "../config/axios";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { removeAdmin, setAdmin } from "../redux/userSlice";
+import PrimarynavBarInstructor from "../components/PrimarynavBarInstructor";
+import Footer from "../components/Footer";
+import axiosInstance from "../config/axios";
 
-const AdminLayout = () => {
+const InstructorLayout = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
 
   const checkAdminAuth = async () => {
     try {
       const response = await axiosInstance.get("/admins/check-admin");
-      if (response.data.data.role === "admin") {
+      if (response.data.data.role === "instructor") {
         dispatch(
           setAdmin({
             id: response.data.data.id,
@@ -32,24 +29,21 @@ const AdminLayout = () => {
       dispatch(removeAdmin());
       navigate("/management/login");
       console.error("Authentication Error:", error.message);
-    } 
+    }
   };
 
   useEffect(() => {
     checkAdminAuth();
     window.scrollTo(0, 0); // Scroll to the top whenever the route changes
-  }, [location.pathname]);
+  });
+
   return (
-    <div className="min-h-screen w-full grid grid-rows-[auto_1fr_auto] md:grid-cols-[auto_1fr] overflow-x-hidden">
-      <AdminNavbar />
-      <Sidebar />
-      <Outlet />
-      <div className="md:block hidden row-span-1 col-span-2">
-        <Footer />
-      </div>
-      <BottomNavigation />
+    <div className="grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen overflow-hidden">
+          <PrimarynavBarInstructor />
+          <Outlet />
+          <Footer/>
     </div>
   );
 };
 
-export default AdminLayout;
+export default InstructorLayout;

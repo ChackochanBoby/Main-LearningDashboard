@@ -1,13 +1,23 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const CourseCard = ({ course, directTo }) => {
   const navigate = useNavigate();
+  const location=useLocation()
+  console.log(course)
+
+  let userType = "user"
+  if(location.pathname.startsWith("/instructor")){
+    userType="instructor"
+  }
+  if(location.pathname.startsWith("/admin")){
+    userType="admin"
+  }
   const actions=["detail","content"]
   if(!actions.includes(directTo)){
     directTo="detail"
   }
   const cardAction = () => {
-    let navigateUrl = `/user/courses/${course.id}`;
+    let navigateUrl = `/${userType}/courses/${course.id}`;
     if (directTo === "content") {
       navigateUrl += "/course-dashboard";
     }
@@ -22,7 +32,7 @@ const CourseCard = ({ course, directTo }) => {
       {/* Image Section */}
       <figure className="h-48 bg-gray-200">
         <img 
-          src={course.thumbnail || "https://via.placeholder.com/300x200?text=No+Image"} 
+          src={course.thumbnail} 
           alt={course.title || "Course Thumbnail"} 
           className="object-cover w-full h-full"
         />

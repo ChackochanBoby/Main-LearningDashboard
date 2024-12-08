@@ -8,7 +8,7 @@ const lessonSchema = new mongoose.Schema(
     module: { type: mongoose.ObjectId, ref: "CourseModule", required: true },
     description: { type: String },
     contentType: { type: String, enum: ["video", "text"], default: "text" },
-    content: { type: mongoose.Schema.Types.Mixed },
+    content: { type: String,required:true },
     videoPublicId:String
   },
   { timestamps: true }
