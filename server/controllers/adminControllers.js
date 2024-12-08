@@ -74,6 +74,15 @@ const updateAdminProfileImg = async (req, res, next) => {
     admin.profileImg = imgPath;
     admin.profileImgPublicId = imgPublicId;
     await admin.save();
+    const token = await generateUserToken({
+      name:admin.name,profileImg:admin.profileImg,role:admin.role,id:admin._id
+    })
+    res.cookie("tokenAdmin", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      secure: process.env.ENVIRONMENT==="PRODUCTION"?true:false,
+      sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
+    });
     res.status(200).json({ success: true, message: "Profile image updated" });
   } catch (error) {
     next(error);
