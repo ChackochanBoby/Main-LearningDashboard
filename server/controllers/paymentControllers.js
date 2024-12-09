@@ -3,7 +3,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const createPaymentSession = async (req, res, next) => {
   try {
-    const { id } = req.user;
+    const { userId } = req;
     const product = req.body;
     console.log(product);
     const Item = [
@@ -27,7 +27,7 @@ const createPaymentSession = async (req, res, next) => {
       success_url: `${process.env.FRONTEND_BASE_URL}/payment/success`,
       cancel_url: `${process.env.FRONTEND_BASE_URL}/payment/success`,
       metadata: {
-        userId: id,
+        userId: userId,
         courseId: product.id,
       },
     });
