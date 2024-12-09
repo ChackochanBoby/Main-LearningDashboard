@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
+
 const PaymentSuccessPage = () => {
     return (
-      <main className="flex items-center justify-center min-h-screen bg-base-100">
+      <main className="flex items-center justify-center h-full bg-base-100">
         <div className="max-w-md w-full text-center p-6 bg-white shadow-md rounded-lg">
           <div className="flex justify-center mb-6">
             <svg
@@ -25,12 +27,12 @@ const PaymentSuccessPage = () => {
             Thank you for your purchase. Your payment has been processed
             successfully.
           </p>
-          <a
-            href="/"
+          <Link
+            to={"/user"}
             className="px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 focus:ring focus:ring-green-300"
           >
             Go to Dashboard
-          </a>
+          </Link>
         </div>
       </main>
     );

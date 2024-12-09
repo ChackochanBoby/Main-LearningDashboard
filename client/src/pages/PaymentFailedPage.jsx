@@ -1,6 +1,6 @@
 const PaymentFailedPage = () => {
     return (
-      <main className="flex items-center justify-center min-h-screen bg-base-100">
+      <main className="flex items-center justify-center h-full bg-base-100">
         <div className="max-w-md w-full text-center p-6 bg-white shadow-md rounded-lg">
           <div className="flex justify-center mb-6">
             <svg
@@ -23,12 +23,6 @@ const PaymentFailedPage = () => {
             Unfortunately, your payment could not be processed. Please try again
             or contact support if the issue persists.
           </p>
-          <a
-            href="/retry"
-            className="px-4 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 focus:ring focus:ring-red-300"
-          >
-            Retry Payment
-          </a>
         </div>
       </main>
     );

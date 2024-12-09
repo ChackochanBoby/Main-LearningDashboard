@@ -25,7 +25,7 @@ const CourseDetailsPage = () => {
     const session = await axiosInstance.post("/payment/create-payment-session", product, { withCredentials: true })
     stripe.redirectToCheckout({ sessionId: session.data.sessionId })
     } catch (error) {
-      console.log(error)
+      window.alert(error.response.data.message)
     }
 }
   
@@ -64,7 +64,7 @@ const CourseDetailsPage = () => {
         </div>
       </section>
       <section id="about-instructor" className="xl:container mx-auto p-8">
-        <div className="text-base-content p-16">
+      <div className="text-base-content p-16">
           <h3 className="text-2xl font-bold mb-6 text-center md:text-left">About the Instructor</h3>
           <div className="flex flex-col md:flex-row items-center gap-4">
             <figure className="w-20 h-20 overflow-hidden rounded-full">
@@ -75,10 +75,8 @@ const CourseDetailsPage = () => {
               />
             </figure>
             <div className="text-center md:text-left">
-              <p className="text-2xl font-medium capitalize">
-                {courseDetails.instructor.name}
-              </p>
-              <p className="text-lg ">{courseDetails.instructor.bio}</p>
+              <p className="text-2xl font-medium capitalize">{courseDetails.instructor.name}</p>
+              <p className="text-lg">{courseDetails.instructor.bio}</p>
             </div>
           </div>
         </div>

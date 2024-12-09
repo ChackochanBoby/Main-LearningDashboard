@@ -120,34 +120,6 @@ const deleteUser = async (req, res, next) => {};
 
 /**
  * 
- * controller to enroll user to a course
- * 
- */
-const courseEnrollment = async (req, res, next) => {
-  const {userId}=req
-  const {courseId}=req.params
-  if(!courseId){
-    return res.status(400).json({success:false, message:"course id missing from request"})
-  }
-  try {
-    const courseExists = Course.exists({_id:courseId})
-    if(!courseExists) {
-      return res.status(404).json({success:false, message: "course doesn't exist"})
-    }
-    const isEnrolled = await Enrollment.exists({learner:userId,course:courseId}).exec()
-    if(isEnrolled){
-      return res.status(400).json({success:false,message:"user is already enrolled"})
-    }
-    const newEnrollment = new Enrollment({learner:userId,course:courseId})
-    await newEnrollment.save()
-    res.status(200).json({success:true, message:"user enrolled in course Successfully"})
-  } catch (error) {
-    next(error)
-  }
-};
-
-/**
- * 
  * controller to check if user is enrolled in a course returns true or false
  * 
  */
@@ -224,7 +196,6 @@ module.exports = {
   updateUserProfile,
   updateUserProfileImg,
   deleteUser,
-  courseEnrollment,
   getEnrolledCourses,
   checkUser,
   checkEnrollment

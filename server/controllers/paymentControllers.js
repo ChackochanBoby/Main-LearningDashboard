@@ -2,10 +2,14 @@ const {Enrollment} = require("../models/enrollmentModel")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const createPaymentSession = async (req, res, next) => {
-  try {
     const { userId } = req;
     const product = req.body;
-    console.log(product);
+    try {
+    const isEnrolled= await Enrollment.findOne({learner:userId,course:product.id}).exec()
+    if(isEnrolled){
+        return res.status(400).json({success:false,message:"user is already enrolled in the course"})
+    }
+    
     const Item = [
       {
         price_data: {
@@ -31,7 +35,6 @@ const createPaymentSession = async (req, res, next) => {
         courseId: product.id,
       },
     });
-    console.log(session);
     res.json({ success: true, sessionId: session.id });
   } catch (error) {
     next(error);
@@ -39,7 +42,6 @@ const createPaymentSession = async (req, res, next) => {
 };
 
 const webhook = async (request, response) => {
-    console.log("hitted")
   let event;
   const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_KEY;
 
@@ -73,7 +75,6 @@ const webhook = async (request, response) => {
         });
 
         await newEnrollment.save();
-        console.log("New enrollment created:", newEnrollment);
       } catch (err) {
         console.error("Failed to enroll user:", err.message);
       }
