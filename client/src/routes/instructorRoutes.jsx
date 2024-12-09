@@ -11,6 +11,8 @@ import CourseDashboardAdmin from "../pages/CourseDashboardAdmin"
 import courseDashboardPageLoaderAdmin from "../loaders/courseDashboardPageLoaderAdmin"
 import LessonPage from "../pages/LessonPage"
 import lessonLoaderAdmin from "../loaders/lessonLoaderAdmin"
+import UpdateLessonPage from "../pages/UpdateLessonPage"
+import updateLessonPageLoader from "../loaders/updatelessonPageLoader"
 
 const InstructorRoutes=[{
       path: "/instructor",
@@ -23,7 +25,7 @@ const InstructorRoutes=[{
         {path:"lesson/:lessonId",element:<LessonPage/>,loader:lessonLoaderAdmin},
         {path:":moduleId/add-lesson",element:<AddLessonPage/>},
         {path:"profile", element:<ProfilePage/>, loader:profilePageLoaderAdminAndInstructor },
-        {path:":lessonId/update",element:<div>update lesson</div>}
+        {path:"lesson/:lessonId/update",element:<UpdateLessonPage/>,loader:updateLessonPageLoader}
       ],
     }]
 

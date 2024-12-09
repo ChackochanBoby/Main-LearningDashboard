@@ -88,7 +88,7 @@ const LessonPage = () => {
         {(isAdminRoute || isInstructorRoute)? (
           <div className="flex justify-center p-4">
             <Link
-             to={`/${isAdminRoute?"admin":"instructor"}/${lesson._id}/update`}
+             to={`/${isAdminRoute?"admin":"instructor"}/lesson/${lesson._id}/update`}
               className="px-6 py-2 bg-blue-500 text-white rounded-lg mx-2"
             >
               Update Lesson

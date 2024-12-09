@@ -71,6 +71,74 @@ const createLesson = async (req, res, next) => {
     next(error);
   }
 };
+const updateLesson = async (req, res, next) => {
+  const {id,role} = req.admin;
+  const { lessonId } = req.params;
+  const { title, contentType, textContent } = req.body;
+  const { file } = req;
+
+  if (!lessonId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "lesson id missing from the request" });
+  }
+  if (!title || !contentType) {
+    return res
+      .status(400)
+      .json({ success: false, message: "title and contentType is required" });
+  }
+
+  if (contentType === "text" && !textContent) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Lesson content missing" });
+  }
+  if (contentType === "video") {
+    if (!file || !file.path) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Lesson content missing" });
+    }
+  }
+
+  try {
+    const lessonToUpdate = await Lesson.findById(lessonId).exec();
+    if (!lessonToUpdate) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Lesson not found" });
+    }
+    if (role!=="admin"&& id !== lessonToUpdate.instructor.toString()) {
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "not authorized to add lesson to this module",
+        });
+    }
+
+    if(lessonToUpdate.contentType === "video" &&
+      (contentType === "text" || (contentType === "video" && file?.path))){
+      await cloudinaryInstance.uploader.destroy({public_id:lessonToUpdate.videoPublicId})
+    }
+
+    lessonToUpdate.title=title
+    lessonToUpdate.contentType=contentType
+    lessonToUpdate.content=contentType==="text"?textContent:file.path
+    lessonToUpdate.videoPublicId=contentType==="text"?null:file.name
+
+    await lessonToUpdate.save();
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "lesson updated successfully",
+        data: lessonToUpdate,
+      });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getLessonForLearners = async (req, res, next) => {
   const { userId } = req;
@@ -178,4 +246,4 @@ const deleteLesson = async (req, res) => {
   }
 };
 
-module.exports = { createLesson, getLessonForLearners,getLessonForAdminAndInstructor, deleteLesson };
+module.exports = { createLesson, getLessonForLearners,getLessonForAdminAndInstructor, updateLesson, deleteLesson };

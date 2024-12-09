@@ -7,8 +7,7 @@ const { moduleRouter } = require("./moduleRoute");
 const { lessonRouter } = require("./lessonRoute");
 const { quizRouter } = require("./quizRoute");
 const { assignmentRouter } = require("./assignmentRoute");
-const { userAuth } = require("../../middleware/userAuth");
-const { adminAuth } = require("../../middleware/adminAuth");
+const { paymentRouter } = require("./paymentRoute")
 const router = express.Router();
 
 router.use("/auth", authRouter);
@@ -19,5 +18,6 @@ router.use("/modules", moduleRouter);
 router.use("/lessons", lessonRouter);
 router.use("/quiz", quizRouter);
 router.use("/assignment", assignmentRouter);
+router.use("/payment", paymentRouter )
 
 module.exports = router;

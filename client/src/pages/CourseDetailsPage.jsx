@@ -1,4 +1,6 @@
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { Link, useLoaderData, useNavigate } from "react-router-dom";
+import {loadStripe} from "@stripe/stripe-js"
+import axiosInstance from "../config/axios";
 
 const CourseDetailsPage = () => {
   const { courseDetails, error,userIsEnrolled } = useLoaderData();
@@ -9,6 +11,24 @@ const CourseDetailsPage = () => {
 
   const navigateLink=userIsEnrolled?`/user/courses/${courseDetails._id}/course-dashboard`:null
 
+
+  const makePayment = async () => {
+    try {
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE)
+
+    const product = {
+      image: courseDetails.thumbnail,
+      title: courseDetails.title,
+      price: courseDetails.price,
+      id:courseDetails._id
+    }
+    
+    const session = await axiosInstance.post("/payment/create-payment-session", product, { withCredentials: true })
+    stripe.redirectToCheckout({ sessionId: session.data.sessionId })
+    } catch (error) {
+      console.log(error)
+    }
+}
   
   return (
     <main>
@@ -36,7 +56,10 @@ const CourseDetailsPage = () => {
               <p>Rating: 4.5</p>
             </div>
             <div>
-              <button onClick={()=>navigate(navigateLink)} className="btn btn-primary w-">{userIsEnrolled?"Course Dashboard":"Enroll"}</button>
+              {
+                userIsEnrolled?<Link to={navigateLink} className="btn btn-primary w-">Course Dashboard</Link>:
+                <button onClick={makePayment} className="btn btn-primary">Enroll</button>
+              }
             </div>
           </div>
         </div>

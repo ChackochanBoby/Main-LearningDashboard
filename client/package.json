@@ -15,6 +15,7 @@
     "@editorjs/list": "^2.0.2",
     "@editorjs/quote": "^2.7.4",
     "@reduxjs/toolkit": "^2.3.0",
+    "@stripe/stripe-js": "^5.2.0",
     "axios": "^1.7.7",
     "dompurify": "^3.2.2",
     "html-react-parser": "^5.1.18",

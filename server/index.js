@@ -13,8 +13,14 @@ const {
 
 // Middleware
 app.use(cors({ origin: process.env.FRONTEND_BASE_URL,credentials:true }));
-app.use(express.json());
 app.use(cookieParser());
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/v1/payment/webhook') {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
 
 // Routes
 app.get("/", (req, res) => {
