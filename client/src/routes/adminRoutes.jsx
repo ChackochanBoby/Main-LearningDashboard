@@ -9,7 +9,7 @@ import courseDashboardPageLoaderAdmin from "../loaders/courseDashboardPageLoader
 import LessonPage from "../pages/LessonPage"
 import lessonLoaderAdmin from "../loaders/lessonLoaderAdmin"
 import UpdateLessonPage from "../pages/UpdateLessonPage"
-import updateLessonPageLoader from "../loaders/updatelessonPageLoader"
+import updateLessonPageLoader from "../loaders/updateLessonPageLoader"
 
 const adminRoutes=[{
       path: "/admin",
