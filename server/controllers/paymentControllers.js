@@ -1,4 +1,4 @@
-const { Enrollment } = require("../models/enrollmentModel");
+const {Enrollment} = require("../models/enrollmentModel")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const createPaymentSession = async (req, res, next) => {
@@ -14,7 +14,7 @@ const createPaymentSession = async (req, res, next) => {
             name: product.title,
             images: [product.image],
           },
-          unit_amount: Number(product.price) * 100,
+          unit_amount: product.price * 100,
         },
         quantity: 1,
       },
@@ -24,8 +24,8 @@ const createPaymentSession = async (req, res, next) => {
       payment_method_types: ["card"],
       line_items: Item,
       mode: "payment",
-      success_url: `${process.env.FRONTEND_BASE_URL}/payment/success`,
-      cancel_url: `${process.env.FRONTEND_BASE_URL}/payment/success`,
+      success_url: `${process.env.FRONTEND_BASE_URL}/user/payment/success`,
+      cancel_url: `${process.env.FRONTEND_BASE_URL}/user/payment/failed`,
       metadata: {
         userId: userId,
         courseId: product.id,
@@ -39,6 +39,7 @@ const createPaymentSession = async (req, res, next) => {
 };
 
 const webhook = async (request, response) => {
+    console.log("hitted")
   let event;
   const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_KEY;
 

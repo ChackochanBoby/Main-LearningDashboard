@@ -4,7 +4,6 @@ import axiosInstance from "../config/axios";
 
 const CourseDetailsPage = () => {
   const { courseDetails, error,userIsEnrolled } = useLoaderData();
-  const navigate = useNavigate()
   if (error) {
     return <div>{error}</div>;
   }

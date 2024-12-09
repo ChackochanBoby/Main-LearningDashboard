@@ -12,6 +12,8 @@ import LessonPage from "../pages/LessonPage";
 import lessonLoader from "../loaders/lessonLoader"
 import ProfilePage from "../pages/ProfilePage";
 import profilePageLoaderUser from "../loaders/profilePageLoaderUser";
+import PaymentSuccessPage from "../pages/PaymentSuccessPage";
+import PaymentFailedPage from "../pages/PaymentFailedPage";
 
 const userRoutes=[
   {
@@ -44,7 +46,9 @@ const userRoutes=[
         path:"profile",
         element:<ProfilePage/>,
         loader: profilePageLoaderUser
-      }
+      },
+      {path:"payment/success",element:<PaymentSuccessPage/>},
+      {path:"payment/failed",element:<PaymentFailedPage/>}
     ],
   }
 ]
