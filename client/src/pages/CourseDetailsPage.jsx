@@ -1,34 +1,43 @@
 import { Link, useLoaderData, useNavigate } from "react-router-dom";
-import {loadStripe} from "@stripe/stripe-js"
+import { loadStripe } from "@stripe/stripe-js";
 import axiosInstance from "../config/axios";
 
 const CourseDetailsPage = () => {
-  const { courseDetails, error,userIsEnrolled } = useLoaderData();
+  const { courseDetails, error, userIsEnrolled } = useLoaderData();
   if (error) {
     return <div>{error}</div>;
   }
 
-  const navigateLink=userIsEnrolled?`/user/courses/${courseDetails._id}/course-dashboard`:null
-
+  const navigateLink = userIsEnrolled
+    ? `/user/courses/${courseDetails._id}/course-dashboard`
+    : null;
 
   const makePayment = async () => {
     try {
-      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE)
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE);
 
-    const product = {
-      image: courseDetails.thumbnail,
-      title: courseDetails.title,
-      price: courseDetails.price,
-      id:courseDetails._id
-    }
-    
-    const session = await axiosInstance.post("/payment/create-payment-session", product, { withCredentials: true })
-    stripe.redirectToCheckout({ sessionId: session.data.sessionId })
+      const product = {
+        image: courseDetails.thumbnail,
+        title: courseDetails.title,
+        price: courseDetails.price,
+        id: courseDetails._id,
+      };
+
+      const session = await axiosInstance.post(
+        "/payment/create-payment-session",
+        product,
+        { withCredentials: true }
+      );
+      stripe.redirectToCheckout({ sessionId: session.data.sessionId });
     } catch (error) {
-      window.alert(error.response.data.message)
+      if (error.response.status === 400) {
+        window.alert(error.response.data.message);
+      } else {
+        console.log(error);
+      }
     }
-}
-  
+  };
+
   return (
     <main>
       <section id="course-details" className="w-full p-8 bg-base-200">
@@ -47,40 +56,59 @@ const CourseDetailsPage = () => {
           </div>
           <div className="md:col-span-2 lg:col-span-3 text-center md:text-left flex flex-col items center justify-between gap-5">
             <div>
-              <h1 className="text-5xl font-bold capitalize">{courseDetails.title}</h1>
+              <h1 className="text-5xl font-bold capitalize">
+                {courseDetails.title}
+              </h1>
               <p className="pt-6">{courseDetails.description}</p>
             </div>
             <div>
-              <p>Duration: 12 weeks</p>
-              <p>Rating: 4.5</p>
+                <span className="text-2xl font-semibold text-primary">
+                  ₹49.99
+                </span>
+                <span className="ml-2 text-sm text-base-content block">
+                  (One-time payment)
+                </span>
             </div>
             <div>
-              {
-                userIsEnrolled?<Link to={navigateLink} className="btn btn-primary w-">Course Dashboard</Link>:
-                <button onClick={makePayment} className="btn btn-primary">Enroll</button>
-              }
+              {userIsEnrolled === true ? (
+                <Link to={navigateLink} className="btn btn-primary w-">
+                  Course Dashboard
+                </Link>
+              ) : (
+                <button onClick={makePayment} className="btn btn-primary">
+                  Enroll
+                </button>
+              )}
             </div>
           </div>
         </div>
       </section>
       <section id="about-instructor" className="xl:container mx-auto p-8">
-      <div className="text-base-content p-16">
-          <h3 className="text-2xl font-bold mb-6 text-center md:text-left">About the Instructor</h3>
+        <div className="text-base-content p-16">
+          <h3 className="text-2xl font-bold mb-6 text-center md:text-left">
+            About the Instructor
+          </h3>
           <div className="flex flex-col md:flex-row items-center gap-4">
-            <figure className="w-20 h-20 overflow-hidden rounded-full">
+            {/* Profile Image */}
+            <figure className="w-24 h-24 overflow-hidden rounded-full flex-shrink-0">
               <img
                 src={courseDetails.instructor.profileImg}
                 alt={courseDetails.instructor.name}
                 className="w-full h-full object-cover"
               />
             </figure>
-            <div className="text-center md:text-left">
-              <p className="text-2xl font-medium capitalize">{courseDetails.instructor.name}</p>
-              <p className="text-lg">{courseDetails.instructor.bio}</p>
+
+            {/* Instructor Info */}
+            <div className="text-center md:text-left ml-3">
+              <p className="text-2xl font-medium capitalize">
+                {courseDetails.instructor.name}
+              </p>
+              <p className="text-base">{courseDetails.instructor.bio}</p>
             </div>
           </div>
         </div>
       </section>
+
       <section id="course-reviews"></section>
     </main>
   );

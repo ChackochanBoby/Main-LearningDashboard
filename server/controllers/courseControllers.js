@@ -358,10 +358,12 @@ const getPublishedCourses = async (req, res, next) => {
 //get all courses with query params
 const getAllCourses = async (req, res, next) => {
   try {
-    const { status } = req.query;
+    const { status="approved", page = 1, limit = 10 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Validate the status query parameter
     if (
       status &&
-      status !== "draft" &&
       status !== "unpublished" &&
       status !== "approved"
     ) {
@@ -369,18 +371,35 @@ const getAllCourses = async (req, res, next) => {
         .status(400)
         .json({ success: false, message: "unexpected query param value" });
     }
-    const optional = {};
-    if (status) {
-      optional.status = status;
-    }
-    const courses = await Course.find(optional)
-      .populate({ path: "instructor", select: "name" })
-      .exec();
+
+    // Fetch courses and count total matching documents
+    const [courses, totalResults] = await Promise.all([
+      Course.find({status:status})
+        .skip(skip)
+        .limit(parseInt(limit))
+        .populate({ path: "instructor", select: "name" })
+        .exec(),
+      Course.countDocuments({status:status}),
+    ]);
+
+    // Check if any courses were found
     if (courses.length === 0) {
       return res
         .status(404)
         .json({ success: false, message: "no courses to be found" });
     }
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalResults / limit);
+
+    // Check if the requested page exceeds total pages
+    if (page > totalPages) {
+      return res
+        .status(400)
+        .json({ success: false, message: "page number is not valid" });
+    }
+
+    // Map the courses to the desired response format
     const mappedCourses = courses.map((course) => {
       return {
         title: course.title,
@@ -389,10 +408,14 @@ const getAllCourses = async (req, res, next) => {
         thumbnail: course.thumbnail,
       };
     });
+
+    // Send the response with pagination metadata
     res.status(200).json({
       success: true,
       message: "fetched courses",
       data: mappedCourses,
+      totalPages: totalPages,
+      totalResults: totalResults,
     });
   } catch (error) {
     next(error);
@@ -432,16 +455,19 @@ const coursesToBeReviewed = async (req, res, next) => {
       .json({ success: "false", message: "Unauthorized access" });
   }
   try {
-    const toBeReviewed = await Course.find({ status: "pending_review" }).exec();
+    const toBeReviewed = await Course.find({ status: "pending_review" }).populate({path:"instructor",select:"_id name"}).exec();
     if (toBeReviewed.length === 0) {
       return res
         .status(404)
         .json({ success: false, message: "Course not found" });
     }
+    const mappedCourses = toBeReviewed.map((course)=>{
+      return {id:course._id,title:course.title,thumbnail:course.thumbnail,instructor:course.instructor}
+    })
     res.status(200).json({
       success: true,
       message: "fetched courses to be reviewed",
-      data: toBeReviewed,
+      data: mappedCourses,
     });
   } catch (error) {
     next(error);

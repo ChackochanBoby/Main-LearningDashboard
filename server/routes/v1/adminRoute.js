@@ -11,7 +11,7 @@ router.put("/update-profileImg",adminAuth,imageParser.single('profileImg'),updat
 //router.delete("/delete", adminAuth, deleteUser)
 router.get("/check-admin", checkAdmin)
 
-router.get("/courses/for-review",adminAuth,adminOnly,coursesToBeReviewed)
+router.get("/courses/pending-review",adminAuth,adminOnly,coursesToBeReviewed)
 router.patch("/courses/:courseId/review", adminAuth, adminOnly, reviewCourse)
 router.get("/courses",adminAuth,adminOnly,getAllCourses)
 router.get("/courses/:courseId",adminAuth,getCourseDetailsForAdmins)

@@ -23,7 +23,7 @@ const CoursesPage = () => {
 
 
   return (
-    <main>
+    <main >
       <div className="xl:container mx-auto p-8 pb-1 grid grid-rows-[min-content_1fr] h-full">
         <div className="w-full flex justify-between">
           <h1 className="text-3xl">Courses</h1>

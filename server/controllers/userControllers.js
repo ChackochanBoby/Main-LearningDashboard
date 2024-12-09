@@ -123,17 +123,19 @@ const deleteUser = async (req, res, next) => {};
  * controller to check if user is enrolled in a course returns true or false
  * 
  */
-const checkEnrollment=async(req,res,next)=>{
-  const { userId } = req
-  const {courseId} = req.params
+const checkEnrollment = async (req, res, next) => {
+  const { userId } = req;
+  const { courseId } = req.params;
+
   try {
-    const isEnrolled = await Enrollment.exists({learner:userId,course:courseId}).exec()
-    const data=isEnrolled?true:false
-    res.status(200).json({success:true,data})
+    // Convert the result to a boolean
+    const isEnrolled = !!(await Enrollment.exists({ learner: userId, course: courseId }).exec());
+    
+    res.status(200).json({ success: true, data: isEnrolled });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * 

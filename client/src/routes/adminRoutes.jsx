@@ -10,6 +10,10 @@ import LessonPage from "../pages/LessonPage"
 import lessonLoaderAdmin from "../loaders/lessonLoaderAdmin"
 import UpdateLessonPage from "../pages/UpdateLessonPage"
 import updateLessonPageLoader from "../loaders/updateLessonPageLoader"
+import CoursesPageAdmin from "../pages/CoursesPageAdmin"
+import coursesPageLoaderAdmin from "../loaders/coursesPageLoaderAdmin"
+import CoursesPendingReview from "../pages/CoursesPendingReview"
+import coursesPendingReviewLoader from "../loaders/coursesPendingReviewLoader"
 
 const adminRoutes=[{
       path: "/admin",
@@ -17,6 +21,8 @@ const adminRoutes=[{
       errorElement:<ErrorPage/>,
       children: [
         {path:"",element:<div>admin dashboard</div>},
+        {path:"courses",element:<CoursesPageAdmin/>,loader:coursesPageLoaderAdmin},
+        {path:"pending-review",element:<CoursesPendingReview/>,loader:coursesPendingReviewLoader},
         {path:"courses/:courseId",element:<ManageCoursePage/>,loader:manageCoursePageLoader},
         {path:":courseId/course-dashboard",element:<CourseDashboardAdmin/>,loader:courseDashboardPageLoaderAdmin},
         {path:"lesson/:lessonId",element:<LessonPage/>,loader:lessonLoaderAdmin},

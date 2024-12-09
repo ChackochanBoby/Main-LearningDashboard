@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const BottomNavigation = () => {
   return (
     <div className="btm-nav btm-nav-xs sm:btm-nav-sm row-span-1 col-span-2 md:hidden">
-      <Link to={"/admin/dashboard"}>
+      <Link to={"/admin"}>
         <span className="sr-only">dashboard</span>
         <span aria-hidden="true" className="material-icons-outlined">home</span>
       </Link>
@@ -15,7 +15,7 @@ const BottomNavigation = () => {
       <span className="sr-only">courses</span>
       <span aria-hidden="true" className="material-icons-outlined">library_books</span>
       </Link>
-      <Link to={"/admin/pending-reviews"}>
+      <Link to={"/admin/pending-review"}>
       <span className="sr-only">pending reviews</span>
       <span aria-hidden="true" className="material-icons-outlined">approval</span>
       </Link>
