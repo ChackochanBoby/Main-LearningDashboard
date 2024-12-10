@@ -267,7 +267,7 @@ const getCourseContentForAdminsAndInstructor = async (req, res, next) => {
         select: "_id title description lessons",
         populate: {
           path: "lessons",
-          select: "_id title instructor",
+          select: "_id title",
         },
       })
       .exec();
@@ -279,31 +279,12 @@ const getCourseContentForAdminsAndInstructor = async (req, res, next) => {
       });
     }
 
-    // Check if the role is 'admin' or 'instructor'
-    if (role === "admin") {
-      // If the user is an admin, no further verification is needed
-      return res.status(200).json({
-        success: true,
-        message: "Fetched course contents",
-        data: course,
-      });
-    }
-
-    // If the role is 'instructor', verify if the admin is the instructor of the course
-    const isInstructor = course.modules.some(module => 
-      module.lessons.some(lesson => 
-        lesson.instructor.toString() === adminId.toString()
-      )
-    );
-
-    if (!isInstructor) {
+    if (role!=="admin"&&id!==course.instructor.toString) {
       return res.status(403).json({
         success: false,
-        message: "Only the instructor of the course can access the contents",
+        message: "Only the unauthorized access",
       });
     }
-
-    // If the admin is the instructor or the user is an admin, send the course content
     res.status(200).json({
       success: true,
       message: "Fetched course contents",
