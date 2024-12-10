@@ -256,7 +256,7 @@ const getCourseDetailsForAdmins = async (req, res, next) => {
 
 //course content for admin and instructor access
 const getCourseContentForAdminsAndInstructor = async (req, res, next) => {
-  const { id: adminId, role } = req.admin; // Get adminId and role from the request object
+  const { id, role } = req.admin;
   const { courseId } = req.params; // Get courseId from the URL parameters
 
   try {
@@ -279,10 +279,10 @@ const getCourseContentForAdminsAndInstructor = async (req, res, next) => {
       });
     }
 
-    if (role!=="admin"&&adminId!==course.instructor.toString) {
+    if (role !== "admin" && id !== course.instructor.toString()) {
       return res.status(403).json({
         success: false,
-        message: "Only the unauthorized access",
+        message: "Unauthorized access",
       });
     }
     res.status(200).json({
