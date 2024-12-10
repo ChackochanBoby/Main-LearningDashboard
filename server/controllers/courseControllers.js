@@ -279,7 +279,7 @@ const getCourseContentForAdminsAndInstructor = async (req, res, next) => {
       });
     }
 
-    if (role!=="admin"&&id!==course.instructor.toString) {
+    if (role!=="admin"&&adminId!==course.instructor.toString) {
       return res.status(403).json({
         success: false,
         message: "Only the unauthorized access",
