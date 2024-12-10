@@ -1,9 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const CourseCard = ({ course, directTo }) => {
+const CourseCard = ({ course}) => {
   const navigate = useNavigate();
   const location=useLocation()
-  console.log(course)
 
   let userType = "user"
   if(location.pathname.startsWith("/instructor")){
@@ -12,16 +11,9 @@ const CourseCard = ({ course, directTo }) => {
   if(location.pathname.startsWith("/admin")){
     userType="admin"
   }
-  const actions=["detail","content"]
-  if(!actions.includes(directTo)){
-    directTo="detail"
-  }
+
   const cardAction = () => {
-    let navigateUrl = `/${userType}/courses/${course.id}`;
-    if (directTo === "content") {
-      navigateUrl += "/course-dashboard";
-    }
-    navigate(navigateUrl);
+    navigate(`/${userType}/courses/${course.id}`);
   };
 
   return (

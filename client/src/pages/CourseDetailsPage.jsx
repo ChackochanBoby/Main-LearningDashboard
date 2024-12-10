@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useNavigate } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import axiosInstance from "../config/axios";
 
@@ -62,12 +62,17 @@ const CourseDetailsPage = () => {
               <p className="pt-6">{courseDetails.description}</p>
             </div>
             <div>
-                <span className="text-2xl font-semibold text-primary">
-                  ₹49.99
+                {
+                  userIsEnrolled?(<span className="text-2xl font-semibold text-primary">Owned</span>):(
+                    <>
+                    <span className="text-2xl font-semibold text-primary">
+                  ₹{courseDetails.price}
                 </span>
                 <span className="ml-2 text-sm text-base-content block">
                   (One-time payment)
                 </span>
+                    </>)
+                }
             </div>
             <div>
               {userIsEnrolled === true ? (

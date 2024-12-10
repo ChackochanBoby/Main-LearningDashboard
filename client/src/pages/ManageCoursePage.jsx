@@ -9,6 +9,7 @@ import UpdateCourseDetailsForm from "../components/UpdateCourseDetailsForm";
 import { useState } from "react";
 import UpdateThumbnailForm from "../components/UpdateThumbnailForm";
 import axiosInstance from "../config/axios";
+import ReviewCourseForm from "../components/ReviewCourseForm";
 
 const ManageCoursePage = () => {
   const { courseDetails, error } = useLoaderData();
@@ -19,9 +20,14 @@ const ManageCoursePage = () => {
   const adminRole = location.pathname.startsWith("/admin")
     ? "admin"
     : "instructor";
+  const [isReviewModalOpen,setReviewModalOpen]=useState(false)
 
   if (error) {
     return <div>{error}</div>;
+  }
+
+  const onReviewButtonClick = () =>{
+    setReviewModalOpen(true)
   }
 
   const sendForReviewAndPublish = async () => {
@@ -77,6 +83,16 @@ const ManageCoursePage = () => {
             </div>
             <div className=" mx-auto md:ml-0">
               <span className="text-lg font-semibold text-base-content capitalize block">{courseDetails.status}</span>
+              {courseDetails.status === "unpublished" && (
+                <div className="my-2 bg-base-100 p-2">
+                  <h3 className="font-bold text-lg text-red-500">
+                    Feedback from Admin:
+                  </h3>
+                  <p className="text-base text-gray-700">
+                    {courseDetails.feedback || "No feedback provided."}
+                  </p>
+                </div>
+              )}
               <span className="font-semibold block text-lg">
                 Price: ₹{courseDetails.price}
               </span>
@@ -109,7 +125,7 @@ const ManageCoursePage = () => {
               
                 {
                   adminRole==="admin"&&(
-                    <button className="btn btn-success">Review</button>
+                    <button onClick={onReviewButtonClick} className="btn btn-success">Review</button>
                   )
                 }
               <button
@@ -132,6 +148,9 @@ const ManageCoursePage = () => {
           modalControl={setThumbnailUpdateModal}
         >
           <UpdateThumbnailForm courseId={courseDetails._id} />
+        </Modal>
+        <Modal isOpen={isReviewModalOpen} modalControl={setReviewModalOpen}>
+                <ReviewCourseForm/>
         </Modal>
       </section>
 
