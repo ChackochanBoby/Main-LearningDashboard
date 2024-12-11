@@ -17,7 +17,7 @@ function ProfilePage() {
   };
 
   if (error) {
-    return <div className="text-error">{error}</div>;
+    return <span className="block my-10 text-3xl w-full text-center">{error}</span>;
   }
   return (
     <main className="py-12">

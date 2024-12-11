@@ -14,6 +14,8 @@ import CoursesPageAdmin from "../pages/CoursesPageAdmin"
 import coursesPageLoaderAdmin from "../loaders/coursesPageLoaderAdmin"
 import CoursesPendingReview from "../pages/CoursesPendingReview"
 import coursesPendingReviewLoader from "../loaders/coursesPendingReviewLoader"
+import UserManagementPage from "../pages/UserManagementPage"
+import userManagementLoader from "../loaders/userManagementLoader"
 
 const adminRoutes=[{
       path: "/admin",
@@ -27,7 +29,8 @@ const adminRoutes=[{
         {path:":courseId/course-dashboard",element:<CourseDashboardAdmin/>,loader:courseDashboardPageLoaderAdmin},
         {path:"lesson/:lessonId",element:<LessonPage/>,loader:lessonLoaderAdmin},
         {path:"profile", element:<ProfilePage/>, loader:profilePageLoaderAdminAndInstructor },
-        {path:"lesson/:lessonId/update",element:<UpdateLessonPage/>,loader:updateLessonPageLoader}
+        {path:"lesson/:lessonId/update",element:<UpdateLessonPage/>,loader:updateLessonPageLoader},
+        {path:"users",element:<UserManagementPage/>,loader:userManagementLoader}
       ],
     }]
 

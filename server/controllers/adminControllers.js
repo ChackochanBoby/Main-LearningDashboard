@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 const { Admin } = require("../models/adminModel");
 const {cloudinaryInstance} = require("../config/fileUpload");
 const { Course } = require("../models/courseModel");
-const {generateAdminToken} = require("../utils/jwt")
+const {generateAdminToken} = require("../utils/jwt");
+const { User } = require("../models/userModel");
 
 // User Profile
 const adminProfile = async (req, res, next) => {
@@ -139,11 +140,57 @@ const getInstructorManagedCourses=async (req,res,next)=>{
   }
 }
 
+const getAllUsers = async(req,res,next)=>{
+  try {
+    const users = await User.find().exec()
+    if(!users||(Array.isArray(users)&&users.length==0)){
+      return res.status(404).json({success:false,message:"could not fetch users"})
+    }
+
+    const mappedUsers = users.map((user)=>{
+      return {
+        name:user.name,
+        profileImg:user.profileImg,
+        email:user.email,
+        _id:user._id,
+        role:"learner"
+      }
+    })
+
+    res.status(200).json({success:true,message:"fetched all users",data:mappedUsers})
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getAllInstructors = async(req,res,next)=>{
+  try {
+    const instructors = await Admin.find({role:"instructor"}).exec()
+    if(!instructors||(Array.isArray(instructors)&&instructors.length==0)){
+      return res.status(404).json({success:false,message:"could not fetch instructors"})
+    }
+    const mappedInstructors = instructors.map((instructor)=>{
+      return {
+        name:instructor.name,
+        email:instructor.email,
+        profileImg:instructor.profileImg,
+        _id:instructor._id,
+        role:instructor.role
+      }
+    })
+    res.status(200).json({success:true,message:"fetched all instructors",data:instructors})
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 module.exports = {
   adminProfile,
   updateAdminProfile,
   updateAdminProfileImg,
   checkAdmin,
-  getInstructorManagedCourses
+  getInstructorManagedCourses,
+  getAllInstructors,
+  getAllUsers
 };

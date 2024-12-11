@@ -53,9 +53,7 @@ const CoursesPage = () => {
             </div>
           </div>
         ) : (
-          <span className="block my-10 text-3xl w-full text-center">
-            <p>{error}</p>
-          </span>
+          <span className="block my-10 text-3xl w-full text-center">{error}</span>
         )}
       </div>
     </main>

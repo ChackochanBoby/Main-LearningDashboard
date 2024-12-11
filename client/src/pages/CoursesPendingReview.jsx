@@ -2,7 +2,7 @@ import { useLoaderData } from "react-router-dom";
 import CourseCard from "../components/CourseCard";
 
 const CoursesPendingReview = () => {
-  const { courses, error } = useLoaderData();
+  const { courses, error , statusCode } = useLoaderData();
 
   return (
     <main className="w-full md:col-span-1 col-span-2 pb-6">
@@ -21,7 +21,7 @@ const CoursesPendingReview = () => {
           </div>
         ) : (
           <span className="block my-10 text-3xl w-full text-center">
-            <p>{error || "No courses pending review at the moment."}</p>
+            <p>{statusCode===404?"No courses pending review at the moment.":error}</p>
           </span>
         )}
       </div>

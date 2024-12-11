@@ -11,7 +11,7 @@ const CourseDashboardAdmin = () => {
   const [isModalOpen,setModalOpen]=useState(false)
   
   if (error) {
-    return <div>{error}</div>;
+    return <span className="block my-10 text-3xl w-full text-center">{error}</span>;
   }
 
   return (
