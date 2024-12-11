@@ -9,7 +9,7 @@ const courseSchema = new mongoose.Schema(
     price: { type: Number, default: 50, required: true },
     status: { type: String, enum: ["draft", "pending_review", "approved", "unpublished"], default: "draft" },
     feedback:{type:String},
-    thumbnail: { type: String,default:"https://asset.cloudinary.com/dxoawvjqt/ea46b237f744a27169a796388aaa5155"},
+    thumbnail: { type: String,default:"https://res.cloudinary.com/dxoawvjqt/image/upload/v1733930713/Mindspring-images/gpbxdsizoltngptrs2ev.jpg"},
     thumbnailPublicId:{type:String},
   },
   { timestamps: true }

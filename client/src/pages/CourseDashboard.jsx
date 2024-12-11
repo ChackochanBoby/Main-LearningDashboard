@@ -1,12 +1,24 @@
+import { useEffect, useState } from "react";
 import ModuleAccordion from "../components/ModuleAccordion";
 import { useLoaderData } from "react-router-dom";
+import axiosInstance from "../config/axios";
 
 const CourseDashboard = () => {
   const {courseContent,error} = useLoaderData()
-  
+  const [progress,setProgress] = useState(0)
+
+  useEffect(()=>{
+    axiosInstance.get(`/progress/${courseContent._id}`)
+    .then((response)=>{
+      setProgress(response.data.data)
+    }).catch((error)=>console.log(error))
+  })
+
   if (error) {
     return <span className="block my-10 text-3xl w-full text-center">{error}</span>;
   }
+
+  
 
   return (
     <main>
@@ -17,7 +29,7 @@ const CourseDashboard = () => {
         <h1 className="text-center text-5xl font-bold">{courseContent.title}</h1>
         <progress
           className="progress progress-secondary w-4/6 my-8"
-          value="70"
+          value={progress}
           max="100"
         />
       </section>
