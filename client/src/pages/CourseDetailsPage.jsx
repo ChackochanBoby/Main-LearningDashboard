@@ -22,7 +22,6 @@ const CourseDetailsPage = () => {
         price: courseDetails.price,
         id: courseDetails._id,
       };
-
       const session = await axiosInstance.post(
         "/payment/create-payment-session",
         product,
@@ -33,7 +32,7 @@ const CourseDetailsPage = () => {
       if (error.response.status === 400) {
         window.alert(error.response.data.message);
       } else {
-        console.log(error);
+        console.log(error.response.data);
       }
     }
   };

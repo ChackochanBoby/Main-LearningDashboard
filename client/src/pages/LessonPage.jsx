@@ -9,12 +9,31 @@ const LessonPage = () => {
   const { lesson, error } = useLoaderData();
   const [lessonContent, setLessonContent] = useState(null);
   const { contentType, content, title } = lesson;
+  const {lessonIsCompleted,setIsCompleted}=useState(false)
   const navigate=useNavigate()
   const location = useLocation();
+
+
+  useEffect(()=>{
+    axiosInstance.get(`/progress/lesson/${lesson._id}`)
+    .then(response=>{
+      setIsCompleted(response.data.data)
+    })
+  })
 
   // Check if the user is an admin or instructor based on the URL
   const isAdminRoute = location.pathname.includes("/admin");
   const isInstructorRoute = location.pathname.includes("/instructor");
+
+  const markAsCompleted=async()=>{
+    try {
+      await axiosInstance.put(`/${lesson.course}/${lesson.module}/${lesson._id}`)
+      setIsCompleted(true)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   useEffect(() => {
     if (contentType === "video") {
@@ -100,7 +119,7 @@ const LessonPage = () => {
               Delete Lesson
             </button>
           </div>
-        ):(<button className="btn btn-success">Mark as completed</button>)}
+        ):(<button onClick={markAsCompleted} disabled={lessonIsCompleted?true:false} className="btn btn-success">{lessonIsCompleted?"completed":"Mark as completed"}</button>)}
       </section>
     </main>
   );

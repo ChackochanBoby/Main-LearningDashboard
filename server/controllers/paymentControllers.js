@@ -2,6 +2,7 @@ const {Enrollment} = require("../models/enrollmentModel")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const createPaymentSession = async (req, res, next) => {
+    console.log("hitted")
     const { userId } = req;
     const product = req.body;
     try {
@@ -9,7 +10,6 @@ const createPaymentSession = async (req, res, next) => {
     if(isEnrolled){
         return res.status(400).json({success:false,message:"user is already enrolled in the course"})
     }
-    
     const Item = [
       {
         price_data: {
