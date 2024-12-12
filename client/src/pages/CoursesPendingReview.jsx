@@ -3,6 +3,8 @@ import CourseCard from "../components/CourseCard";
 
 const CoursesPendingReview = () => {
   const { courses, error , statusCode } = useLoaderData();
+  console.log(useLoaderData())
+  console.log(courses)
 
   return (
     <main className="w-full md:col-span-1 col-span-2 pb-6">
