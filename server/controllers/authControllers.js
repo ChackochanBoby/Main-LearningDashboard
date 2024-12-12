@@ -348,7 +348,7 @@ const adminLogin = async (req, res, next) => {
       sameSite: process.env.ENVIRONMENT==="PRODUCTION"?"None":"Lax"
     });
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: "login successfull",
       data:{role:adminExists.role}

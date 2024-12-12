@@ -1,23 +1,51 @@
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../config/axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPageAdmin = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, setError, formState: { errors } } = useForm();
   const navigate = useNavigate();
+
+  const notify = (message, type = 'success', callback = null) => {
+    toast(message, { type, onClose: callback });
+  };
 
   const onSubmit = async (data) => {
     try {
       const response = await axiosInstance.post("/auth/admin/login", data);
-      const role=response.data.data.role
-      navigate(`/${role}`);
+      if (response.status === 200) {
+        const role = response.data.data.role;
+        notify("Admin logged in successfully", "success", () => navigate(`/${role}`));
+      }
     } catch (error) {
-      console.log(error);
+      if (error.response?.data?.message) {
+        // Handle server-side general error message
+        notify(error.response.data.message, "error");
+      } else {
+        // Handle specific field errors (e.g., email or password)
+        if (error.response?.data?.errors?.email) {
+          setError('email', { message: error.response.data.errors.email });
+        }
+        if (error.response?.data?.errors?.password) {
+          setError('password', { message: error.response.data.errors.password });
+        }
+
+        // Handle unexpected errors
+        if (
+          !error.response?.data?.errors?.email &&
+          !error.response?.data?.errors?.password
+        ) {
+          notify("An unexpected error occurred. Please try again.", "error");
+        }
+      }
     }
   };
 
   return (
     <main className="flex justify-center mt-8 md:mt-0 md:items-center md:min-h-screen bg-base-100 px-4">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="flex flex-col gap-y-8 w-full max-w-md mx-auto py-6 md:py-10 px-6 md:px-12 rounded-2xl shadow-lg">
         <div className="flex flex-col gap-1 text-center">
           <h1 className="text-2xl md:text-3xl font-bold">Login to MindSpring</h1>
@@ -33,7 +61,13 @@ const LoginPageAdmin = () => {
               type="email"
               className="grow outline-none"
               placeholder="Email"
-              {...register('email', { required: 'Email is required' })}
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: 'Invalid email format',
+                },
+              })}
             />
           </label>
           {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
@@ -46,7 +80,13 @@ const LoginPageAdmin = () => {
               type="password"
               className="grow outline-none"
               placeholder="Password"
-              {...register('password', { required: 'Password is required' })}
+              {...register('password', {
+                required: 'Password is required',
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+                  message: 'Password must be at least 8 characters, include an uppercase letter, a lowercase letter, a number, and a special character.',
+                },
+              })}
             />
           </label>
           {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
