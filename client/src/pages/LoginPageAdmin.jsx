@@ -15,7 +15,7 @@ const LoginPageAdmin = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axiosInstance.post("/auth/admin/login", data);
-      if (response.status === 200) {
+      if (response.status=== 201) {
         const role = response.data.data.role;
         notify("Admin logged in successfully", "success", () => navigate(`/${role}`));
       }

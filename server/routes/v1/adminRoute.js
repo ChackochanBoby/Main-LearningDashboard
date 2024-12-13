@@ -1,5 +1,5 @@
 const express = require("express");
-const { checkAdmin, adminProfile, updateAdminProfile, updateAdminProfileImg, getInstructorManagedCourses, getAllInstructors, getAllUsers } = require("../../controllers/adminControllers");
+const { checkAdmin, adminProfile, updateAdminProfile, updateAdminProfileImg, getInstructorManagedCourses, getAllInstructors, getAllUsers, getStats } = require("../../controllers/adminControllers");
 const router = express.Router();
 const { imageParser } = require("../../config/fileUpload");
 const { adminAuth, adminOnly, instructorOnly } = require("../../middleware/adminAuth");
@@ -19,4 +19,5 @@ router.get("/managed-courses",adminAuth,instructorOnly,getInstructorManagedCours
 
 router.get("/users",adminAuth,adminOnly, getAllUsers)
 router.get("/instructors",adminAuth,adminOnly,getAllInstructors)
+router.get("/stats",adminAuth,adminOnly,getStats)
 module.exports = { adminRouter: router };

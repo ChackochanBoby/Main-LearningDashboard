@@ -53,7 +53,7 @@ const TextEditor = ({ initialContent, onSave }) => {
   return (
     <div
       id="editor"
-      className="w-full max-w-[41rem] min-h-32 max-h-36 overflow-y-scroll border-4 border-base-300 bg-base-100"
+      className="w-full max-w-[41rem] min-h-40 max-h-36 overflow-y-scroll border-4 border-base-300 bg-base-100"
     ></div>
   );
 };

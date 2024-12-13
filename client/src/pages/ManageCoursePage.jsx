@@ -150,7 +150,7 @@ const ManageCoursePage = () => {
           <UpdateThumbnailForm courseId={courseDetails._id} />
         </Modal>
         <Modal isOpen={isReviewModalOpen} modalControl={setReviewModalOpen}>
-                <ReviewCourseForm/>
+                <ReviewCourseForm courseId={courseDetails._id}/>
         </Modal>
       </section>
 

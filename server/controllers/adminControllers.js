@@ -184,6 +184,19 @@ const getAllInstructors = async(req,res,next)=>{
   }
 }
 
+const getStats=async(req,res,next)=>{
+  try{
+    const numberOfLeraners = await User.countDocuments()
+    const numberOfInstructors= await Admin.countDocuments({role:"instructor"})
+    const numberOfPublishedCourses= await Course.countDocuments({status:"approved"})
+    const numberOfCoursesPendingReview= await Course.countDocuments({status:"pending_review"})
+    res.status(200).json({success:true,message:"fetched platform stats",data:{
+      totalLearners:numberOfLeraners,totalInstructors:numberOfInstructors,pendingReview:numberOfCoursesPendingReview,publishedCourses:numberOfPublishedCourses
+    }})
+  }catch(error){
+    next(error)
+  }
+}
 
 module.exports = {
   adminProfile,
@@ -192,5 +205,6 @@ module.exports = {
   checkAdmin,
   getInstructorManagedCourses,
   getAllInstructors,
-  getAllUsers
+  getAllUsers,
+  getStats
 };

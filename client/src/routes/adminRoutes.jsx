@@ -16,13 +16,15 @@ import CoursesPendingReview from "../pages/CoursesPendingReview"
 import coursesPendingReviewLoader from "../loaders/coursesPendingReviewLoader"
 import UserManagementPage from "../pages/UserManagementPage"
 import userManagementLoader from "../loaders/userManagementLoader"
+import AdminDashboard from "../pages/AdminDashboard"
+import AdminDashboardLoader from "../loaders/AdminDashboardLoader"
 
 const adminRoutes=[{
       path: "/admin",
       element: <AdminLayout/>,
       errorElement:<ErrorPage/>,
       children: [
-        {path:"",element:<div>admin dashboard</div>},
+        {path:"",element:<AdminDashboard/>,loader:AdminDashboardLoader},
         {path:"courses",element:<CoursesPageAdmin/>,loader:coursesPageLoaderAdmin},
         {path:"pending-review",element:<CoursesPendingReview/>,loader:coursesPendingReviewLoader},
         {path:"courses/:courseId",element:<ManageCoursePage/>,loader:manageCoursePageLoader},
