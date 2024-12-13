@@ -57,7 +57,7 @@ const LoginPageUser = () => {
       <div className="flex flex-col gap-y-8 w-full max-w-md mx-auto py-6 md:py-10 px-6 md:px-12 rounded-2xl shadow-lg">
         <div className="flex flex-col gap-1 text-center">
           <h1 className="text-2xl md:text-3xl font-bold">
-            Signup for MindSpring
+            MindSpring Login
           </h1>
           <span className="text-lg font-semibold text-base-content">User</span>
         </div>
@@ -108,8 +108,8 @@ const LoginPageUser = () => {
 
         <p className="text-center text-gray-600 text-sm">
           Already have an Account?{" "}
-          <Link to="/user/login" className="link link-primary underline">
-            Log In
+          <Link to="/user/signup" className="link link-primary underline">
+            Signup
           </Link>
         </p>
       </div>
