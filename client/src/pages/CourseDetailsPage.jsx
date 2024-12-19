@@ -61,8 +61,9 @@ const CourseDetailsPage = () => {
               <p className="pt-6">{courseDetails.description}</p>
             </div>
             <div>
+                <span className="block text-xl font-semibold">Duration: {courseDetails.duration} weeks</span>
                 {
-                  userIsEnrolled?(<span className="text-2xl font-semibold text-primary">Owned</span>):(
+                  userIsEnrolled?(<span className="text-2xl font-semibold text-primary">Enrolled</span>):(
                     <>
                     <span className="text-2xl font-semibold text-primary">
                   ₹{courseDetails.price}

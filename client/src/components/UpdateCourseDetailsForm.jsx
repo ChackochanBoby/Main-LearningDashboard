@@ -7,44 +7,62 @@ function UpdateCourseForm({ courseId }) {
     register,
     handleSubmit,
     formState: { errors },
-    reset, // Import the reset function from useForm
+    reset,
   } = useForm();
 
-  const [submitState, setSubmitState] = useState(null); // State to track submission status
+  const [submitState, setSubmitState] = useState(null);
 
   useEffect(() => {
     if (courseId) {
-      const url = `/courses/${courseId}/manage`; // Endpoint to fetch course details
+      const url = `/courses/${courseId}/manage`;
 
       axiosInstance
         .get(url)
         .then((response) => {
-          console.log(response);
-          // Use reset to populate the form with fetched course details
+          const course = response.data.data;
           reset({
-            title: response.data.data.title,
-            price: response.data.data.price,
-            description: response.data.data.description,
+            title: course.title,
+            price: course.price,
+            description: course.description,
+            duration: course.duration,
           });
         })
         .catch((error) => {
-          console.log(error);
+          console.error("Error fetching course details:", error);
         });
     }
-  }, [courseId, reset]); // Include reset in dependency array
+  }, [courseId, reset]);
 
   const onSubmit = async (data) => {
     setSubmitState("loading");
 
-    const submitUrl = `/courses/${courseId}/update`; // Endpoint to update course details
+    // Convert text inputs for price and duration to numbers and validate
+    const updatedFields = Object.keys(data).reduce((acc, key) => {
+      if (key === "price" || key === "duration") {
+        const numericValue = parseFloat(data[key]);
+        if (!isNaN(numericValue) && numericValue > 0) {
+          acc[key] = numericValue;
+        } else {
+          setSubmitState("validation-error");
+          return acc;
+        }
+      } else {
+        acc[key] = data[key];
+      }
+      return acc;
+    }, {});
+
+    if (submitState === "validation-error") return;
+
+    const submitUrl = `/courses/${courseId}/update`;
 
     try {
-      const response = await axiosInstance.put(submitUrl, data);
+      const response = await axiosInstance.put(submitUrl, updatedFields);
       console.log("Update Success:", response.data);
-      setSubmitState("success"); // Set success state after successful update
+      setSubmitState("success");
     } catch (error) {
       console.error("Update Error:", error);
-      setSubmitState("error"); // Set error state if update fails
+      setSubmitState("error");
     }
   };
 
@@ -73,17 +91,38 @@ function UpdateCourseForm({ courseId }) {
           <label className="label-text">Price</label>
         </div>
         <input
-          type="number"
-          step="0.01"
+          type="text"
           {...register("price", {
             required: "Price is required",
-            min: { value: 0, message: "Price must be a positive value" },
+            validate: (value) =>
+              !isNaN(parseFloat(value)) && parseFloat(value) > 0 || 
+              "Price must be a positive number",
           })}
           placeholder="Course Price"
           className="input input-bordered w-full"
         />
         {errors.price && (
           <p className="text-red-500 text-sm">{errors.price.message}</p>
+        )}
+      </div>
+
+      <div className="form-control w-full">
+        <div className="label">
+          <label className="label-text">Duration (in weeks)</label>
+        </div>
+        <input
+          type="text"
+          {...register("duration", {
+            required: "Duration is required",
+            validate: (value) =>
+              !isNaN(parseInt(value)) && parseInt(value) > 0 || 
+              "Duration must be a positive number",
+          })}
+          placeholder="Course Duration"
+          className="input input-bordered w-full"
+        />
+        {errors.duration && (
+          <p className="text-red-500 text-sm">{errors.duration.message}</p>
         )}
       </div>
 
@@ -108,7 +147,6 @@ function UpdateCourseForm({ courseId }) {
         Update Course
       </button>
 
-      {/* Displaying status messages based on submitState */}
       {submitState === "loading" && (
         <p className="mt-4 text-yellow-500">Updating...</p>
       )}
@@ -118,6 +156,11 @@ function UpdateCourseForm({ courseId }) {
       {submitState === "error" && (
         <p className="mt-4 text-red-500">
           Something went wrong. Please try again.
+        </p>
+      )}
+      {submitState === "validation-error" && (
+        <p className="mt-4 text-red-500">
+          Price and Duration must be positive numbers.
         </p>
       )}
     </form>

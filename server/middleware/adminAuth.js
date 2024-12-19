@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const {Admin}=require("../models/adminModel")
 
 const adminAuth = async (req, res, next) => {
     const { tokenAdmin } = req.cookies;
@@ -10,6 +11,11 @@ const adminAuth = async (req, res, next) => {
   try {
     const decoded = await jwt.verify(tokenAdmin, process.env.TOKEN_SECRET_ADMIN);
     req.admin = {id:decoded.id,role:decoded.role}
+    const admin= await Admin.findById(decoded.id).exec()
+    if(!admin){
+      res.clearCookie("tokenAdmin")
+      return res.status(404).json({success:false,message:"Admin not found"})
+    }
     next();
   } catch (error) {
     next(error);

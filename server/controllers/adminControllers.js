@@ -112,6 +112,11 @@ const checkAdmin = async (req, res, next) => {
       tokenAdmin,
       process.env.TOKEN_SECRET_ADMIN
     );
+    const admin= await Admin.findById(decoded.id).exec()
+    if(!admin){
+      res.clearCookie("tokenAdmin")
+      return res.status(404).json({success:false,message:"Admin not found"})
+    }
     res
       .status(200)
       .json({

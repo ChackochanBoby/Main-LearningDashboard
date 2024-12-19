@@ -7,10 +7,22 @@ const courseSchema = new mongoose.Schema(
     description: { type: String },
     modules: [{ type: mongoose.ObjectId, ref: "CourseModule", default: [] }],
     price: { type: Number, default: 50, required: true },
-    status: { type: String, enum: ["draft", "pending_review", "approved", "unpublished"], default: "draft" },
-    feedback:{type:String},
-    thumbnail: { type: String,default:"https://res.cloudinary.com/dxoawvjqt/image/upload/v1733930713/Mindspring-images/gpbxdsizoltngptrs2ev.jpg"},
-    thumbnailPublicId:{type:String},
+    duration: { 
+      type: Number, 
+      required: true, 
+      min: [1, "Duration must be at least 1 week"] 
+    }, // Duration in weeks
+    status: { 
+      type: String, 
+      enum: ["draft", "pending_review", "approved", "unpublished"], 
+      default: "draft" 
+    },
+    feedback: { type: String },
+    thumbnail: { 
+      type: String, 
+      default: "https://res.cloudinary.com/dxoawvjqt/image/upload/v1733930713/Mindspring-images/gpbxdsizoltngptrs2ev.jpg" 
+    },
+    thumbnailPublicId: { type: String },
   },
   { timestamps: true }
 );

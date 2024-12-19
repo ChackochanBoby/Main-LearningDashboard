@@ -6,18 +6,27 @@ const {Enrollment}= require("../models/enrollmentModel");
 //create course
 const createCourse = async (req, res, next) => {
   const { admin } = req;
-  const { title, description, price } = req.body;
+  const { title, description, price, duration } = req.body;
 
+  // Validate title
   if (!title) {
     return res
       .status(400)
-      .json({ success: false, message: "title field is required" });
+      .json({ success: false, message: "Title field is required" });
   }
 
+  // Validate price
   if (typeof price !== "number" || price <= 0) {
     return res
       .status(400)
       .json({ success: false, message: "Price must be a positive number" });
+  }
+
+  // Validate duration
+  if (typeof duration !== "number" || duration < 1) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Duration must be at least 1 week" });
   }
 
   // Create the new course
@@ -25,7 +34,8 @@ const createCourse = async (req, res, next) => {
     title,
     instructor: admin.id,
     description,
-    price, 
+    price,
+    duration,
   });
 
   try {
@@ -38,12 +48,13 @@ const createCourse = async (req, res, next) => {
   }
 };
 
+
 //update course info
 const updateCourse = async (req, res, next) => {
   console.log("Update course endpoint hit");
   const { admin } = req;
   const { courseId } = req.params;
-  const { title, description, price } = req.body;
+  const { title, description, price, duration } = req.body;
 
   // Ensure courseId is provided
   if (!courseId) {
@@ -53,11 +64,12 @@ const updateCourse = async (req, res, next) => {
     });
   }
 
-  // Ensure at least one field (title, description, or price) is provided
-  if (!title && !description && price === undefined) {
+  // Ensure at least one field (title, description, price, or duration) is provided
+  if (!title && !description && price === undefined && duration === undefined) {
     return res.status(400).json({
       success: false,
-      message: "At least one field (title, description, or price) must be provided for update",
+      message:
+        "At least one field (title, description, price, or duration) must be provided for update",
     });
   }
 
@@ -71,11 +83,22 @@ const updateCourse = async (req, res, next) => {
 
   // Validate price (if provided)
   if (price !== undefined) {
-    const parsedPrice = parseFloat(price); // Ensure price is parsed as a number
+    const parsedPrice = parseFloat(price);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
       return res.status(400).json({
         success: false,
         message: "Price must be a positive number",
+      });
+    }
+  }
+
+  // Validate duration (if provided)
+  if (duration !== undefined) {
+    const parsedDuration = parseInt(duration, 10);
+    if (isNaN(parsedDuration) || parsedDuration < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Duration must be at least 1 week",
       });
     }
   }
@@ -107,6 +130,7 @@ const updateCourse = async (req, res, next) => {
     if (title) courseToUpdate.title = title.trim();
     if (description) courseToUpdate.description = description.trim();
     if (price !== undefined) courseToUpdate.price = parseFloat(price);
+    if (duration !== undefined) courseToUpdate.duration = parseInt(duration, 10);
 
     // Save updated course
     const updatedCourse = await courseToUpdate.save();
@@ -120,6 +144,7 @@ const updateCourse = async (req, res, next) => {
         title: updatedCourse.title,
         description: updatedCourse.description,
         price: updatedCourse.price,
+        duration: updatedCourse.duration,
       },
     });
   } catch (error) {
@@ -127,6 +152,7 @@ const updateCourse = async (req, res, next) => {
     next(error); // Pass error to global error handler
   }
 };
+
 
 
 //update course image

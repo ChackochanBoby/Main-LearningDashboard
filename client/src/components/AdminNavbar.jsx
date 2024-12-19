@@ -42,9 +42,6 @@ const AdminNavbar = () => {
                 </Link>
               </li>
               <li>
-                <Link>Settings</Link>
-              </li>
-              <li>
                 <LogoutButton/>
               </li>
             </ul>

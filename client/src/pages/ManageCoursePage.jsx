@@ -22,7 +22,7 @@ const ManageCoursePage = () => {
   const adminRole = location.pathname.startsWith("/admin")
     ? "admin"
     : "instructor";
-  const [isReviewModalOpen,setReviewModalOpen]=useState(false)
+  const [isReviewModalOpen, setReviewModalOpen] = useState(false);
 
   if (error) {
     return <span className="block my-10 text-3xl w-full text-center">{error}</span>;
@@ -30,10 +30,10 @@ const ManageCoursePage = () => {
 
   const notify = (message, type = 'success', callback = null) => {
       toast(message, { type, onClose: callback });
-    };
+  };
 
-  const onReviewButtonClick = () =>{
-    setReviewModalOpen(true)
+  const onReviewButtonClick = () => {
+    setReviewModalOpen(true);
   }
 
   const sendForReviewAndPublish = async () => {
@@ -42,7 +42,7 @@ const ManageCoursePage = () => {
         `/courses/${courseDetails._id}/send-for-review`
       );
       window.alert(
-        "added for review, course will be reviewed by admins in a short while"
+        "Added for review, course will be reviewed by admins in a short while"
       );
     } catch (error) {
       console.log(error);
@@ -56,24 +56,20 @@ const ManageCoursePage = () => {
     if (confirmDelete) {
       try {
         await axiosInstance.delete(`/courses/${courseDetails._id}/delete`);
-        notify("Course Deleted successfully","success",()=>{
+        notify("Course Deleted successfully", "success", () => {
           if (location.pathname.startsWith("/admin")) navigate("/admin/courses");
-        else navigate("/instructor");
-        })
-        
+          else navigate("/instructor");
+        });
       } catch (error) {
         console.error("Error deleting course:", error);
-        notify(error.response.data.message,"error")
+        notify(error.response.data.message, "error");
       }
-    }
-    else{
-      return
     }
   };
 
   return (
     <main>
-      <ToastContainer/>
+      <ToastContainer />
       <section id="manage-course-details" className="w-full p-8 bg-base-300">
         <div className="xl:container mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
           <div>
@@ -96,7 +92,9 @@ const ManageCoursePage = () => {
               <p className="pt-6">{courseDetails.description}</p>
             </div>
             <div className=" mx-auto md:ml-0">
-              <span className="text-lg font-semibold text-base-content capitalize block">{courseDetails.status}</span>
+              <span className="text-lg font-semibold text-base-content capitalize block">
+                {courseDetails.status}
+              </span>
               {courseDetails.status === "unpublished" && (
                 <div className="my-2 bg-base-100 p-2">
                   <h3 className="font-bold text-lg text-red-500">
@@ -109,6 +107,10 @@ const ManageCoursePage = () => {
               )}
               <span className="font-semibold block text-lg">
                 Price: ₹{courseDetails.price}
+              </span>
+              {/* Display Duration of the Course */}
+              <span className="font-semibold block text-lg">
+                Duration: {courseDetails.duration} weeks
               </span>
             </div>
             {/* Buttons Section */}
@@ -131,17 +133,17 @@ const ManageCoursePage = () => {
               >
                 Course Content
               </Link>
-              {
-                adminRole==="instructor"&&(courseDetails.status!=="approved"&&courseDetails.status!=="pending_review")?<button onClick={sendForReviewAndPublish} className="btn btn-success">
+              {adminRole === "instructor" && (courseDetails.status !== "approved" && courseDetails.status !== "pending_review") ? (
+                <button onClick={sendForReviewAndPublish} className="btn btn-success">
                   Send for Review
-                </button>:null
-              }
-              
-                {
-                  adminRole==="admin"&&(
-                    <button onClick={onReviewButtonClick} className="btn btn-success">Review</button>
-                  )
-                }
+                </button>
+              ) : null}
+
+              {adminRole === "admin" && (
+                <button onClick={onReviewButtonClick} className="btn btn-success">
+                  Review
+                </button>
+              )}
               <button
                 onClick={handleDeleteClick}
                 className="btn btn-error text-white"
@@ -164,7 +166,7 @@ const ManageCoursePage = () => {
           <UpdateThumbnailForm courseId={courseDetails._id} />
         </Modal>
         <Modal isOpen={isReviewModalOpen} modalControl={setReviewModalOpen}>
-                <ReviewCourseForm courseId={courseDetails._id}/>
+          <ReviewCourseForm courseId={courseDetails._id} />
         </Modal>
       </section>
 

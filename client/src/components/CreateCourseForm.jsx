@@ -10,13 +10,20 @@ function CreateCourseForm() {
     reset,
   } = useForm();
 
-  const [submitState, setSubmitState] = useState(null); // State to track submission status
+  const [submitState, setSubmitState] = useState(null);
 
   const onSubmit = async (data) => {
     setSubmitState("loading");
 
+    // Convert `price` and `duration` to numbers before sending
+    const formattedData = {
+      ...data,
+      price: Number(data.price),
+      duration: Number(data.duration),
+    };
+
     try {
-      const response = await axiosInstance.post("/courses/create", data);
+      const response = await axiosInstance.post("/courses/create", formattedData);
       console.log("Course Created:", response.data);
       setSubmitState("success");
       reset();
@@ -68,17 +75,39 @@ function CreateCourseForm() {
           <label className="label-text">Price</label>
         </div>
         <input
-          type="number"
+          type="text"
           {...register("price", {
             required: "Price is required",
-            valueAsNumber: true,
-            min: { value: 0, message: "Price must be a positive number" },
+            validate: {
+              positiveNumber: (value) =>
+                !isNaN(value) && Number(value) > 0 || "Price must be a positive number",
+            },
           })}
           placeholder="Course Price"
           className="input input-bordered w-full"
         />
         {errors.price && (
           <p className="text-red-500 text-sm">{errors.price.message}</p>
+        )}
+      </div>
+
+      {/* Course Duration */}
+      <div className="form-control w-full">
+        <div className="label">
+          <label className="label-text">Duration (in weeks)</label>
+        </div>
+        <input
+          type="number"
+          {...register("duration", {
+            required: "Duration is required",
+            valueAsNumber: true,
+            min: { value: 1, message: "Duration must be at least 1 week" },
+          })}
+          placeholder="Course Duration"
+          className="input input-bordered w-full"
+        />
+        {errors.duration && (
+          <p className="text-red-500 text-sm">{errors.duration.message}</p>
         )}
       </div>
 
