@@ -10,6 +10,8 @@ import { useState } from "react";
 import UpdateThumbnailForm from "../components/UpdateThumbnailForm";
 import axiosInstance from "../config/axios";
 import ReviewCourseForm from "../components/ReviewCourseForm";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ManageCoursePage = () => {
   const { courseDetails, error } = useLoaderData();
@@ -25,6 +27,10 @@ const ManageCoursePage = () => {
   if (error) {
     return <span className="block my-10 text-3xl w-full text-center">{error}</span>;
   }
+
+  const notify = (message, type = 'success', callback = null) => {
+      toast(message, { type, onClose: callback });
+    };
 
   const onReviewButtonClick = () =>{
     setReviewModalOpen(true)
@@ -50,16 +56,24 @@ const ManageCoursePage = () => {
     if (confirmDelete) {
       try {
         await axiosInstance.delete(`/courses/${courseDetails._id}/delete`);
-        if (location.pathname.startsWith("/admin")) navigate("/admin/courses");
+        notify("Course Deleted successfully","success",()=>{
+          if (location.pathname.startsWith("/admin")) navigate("/admin/courses");
         else navigate("/instructor");
+        })
+        
       } catch (error) {
         console.error("Error deleting course:", error);
+        notify(error.response.data.message,"error")
       }
+    }
+    else{
+      return
     }
   };
 
   return (
     <main>
+      <ToastContainer/>
       <section id="manage-course-details" className="w-full p-8 bg-base-300">
         <div className="xl:container mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
           <div>

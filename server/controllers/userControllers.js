@@ -116,8 +116,35 @@ const updateUserProfileImg = async (req, res, next) => {
  * controller to delete account
  * 
 */
-const deleteUser = async (req, res, next) => {};
+const deleteUser = async (req, res, next) => {
+  const { userId } = req;
 
+  try {
+    // Find and delete all enrollments associated with the user
+    const enrollments = await Enrollment.find({ learner: userId }).exec();
+    if (enrollments.length > 0) {
+      await Enrollment.deleteMany({ learner: userId });
+    }
+
+    // Delete the user
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Respond with success
+    res.status(200).json({
+      success: true,
+      message: "User and associated enrollments successfully deleted",
+    });
+  } catch (error) {
+    // Pass the error to the next middleware
+    next(error);
+  }
+};
 /**
  * 
  * controller to check if user is enrolled in a course returns true or false

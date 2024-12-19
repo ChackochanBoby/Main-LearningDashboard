@@ -1,5 +1,5 @@
 const express = require("express");
-const { checkAdmin, adminProfile, updateAdminProfile, updateAdminProfileImg, getInstructorManagedCourses, getAllInstructors, getAllUsers, getStats } = require("../../controllers/adminControllers");
+const { checkAdmin, adminProfile, updateAdminProfile, updateAdminProfileImg, getInstructorManagedCourses, getAllInstructors, getAllUsers, getStats, getLearnerById, getInstructorById, deleteLearner, deleteEnrollment, deleteInstructorById } = require("../../controllers/adminControllers");
 const router = express.Router();
 const { imageParser } = require("../../config/fileUpload");
 const { adminAuth, adminOnly, instructorOnly } = require("../../middleware/adminAuth");
@@ -20,4 +20,10 @@ router.get("/managed-courses",adminAuth,instructorOnly,getInstructorManagedCours
 router.get("/users",adminAuth,adminOnly, getAllUsers)
 router.get("/instructors",adminAuth,adminOnly,getAllInstructors)
 router.get("/stats",adminAuth,adminOnly,getStats)
+
+router.get("/learners/:learnerId",adminAuth,adminOnly,getLearnerById)
+router.delete("/learner/:learnerId",adminAuth,adminOnly,deleteLearner)
+router.delete("/enrollment/:enrollmentId",adminAuth,adminOnly,deleteEnrollment)
+router.get("/instructors/:instructorId",adminAuth,adminOnly,getInstructorById)
+router.delete("/instructor/:instructorId",adminAuth,adminOnly,deleteInstructorById)
 module.exports = { adminRouter: router };

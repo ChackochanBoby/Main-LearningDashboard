@@ -5,9 +5,9 @@ const UserCard = ({ id, name, email, role, profileImg }) => {
 
   const handleClick = () => {
     if (role === 'learner') {
-      navigate(`/admin/user-management/user/${id}`);
+      navigate(`/admin/users/learners/${id}`);
     } else if (role === 'instructor') {
-      navigate(`/admin/user-management/instructor/${id}`);
+      navigate(`/admin/users/instructors/${id}`);
     } else {
       navigate(`/user/${id}`);
     }

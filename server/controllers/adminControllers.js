@@ -4,6 +4,7 @@ const {cloudinaryInstance} = require("../config/fileUpload");
 const { Course } = require("../models/courseModel");
 const {generateAdminToken} = require("../utils/jwt");
 const { User } = require("../models/userModel");
+const { Enrollment } = require("../models/enrollmentModel");
 
 // User Profile
 const adminProfile = async (req, res, next) => {
@@ -198,6 +199,116 @@ const getStats=async(req,res,next)=>{
   }
 }
 
+const getLearnerById = async (req, res, next) => {
+  const learnerId = req.params.learnerId;
+  try {
+    // Find the user profile
+    const user = await User.findById(learnerId).exec();
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Find the enrollments of the learner
+    const enrollments = await Enrollment.find({ learner: learnerId })
+      .populate({path:"course",select:"_id title"})
+      .exec();
+      console.log(enrollments)
+
+    // If no enrollments, return user details with an empty array for courses
+    const enrolledCourses = enrollments.length
+      ? enrollments.map((enrollment) => ({
+          title: enrollment.course.title,
+          id: enrollment.course._id,enrollmentId:enrollment._id
+        }))
+      : [];
+
+    // Send back the profile and enrolled courses
+    res.status(200).json({
+      success: true,
+      message: "Fetched user details",
+      data: {
+        profile: user,
+        enrolledCourses: enrolledCourses,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+const getInstructorById=async (req,res,next)=>{
+  const instructorId=req.params.instructorId
+    try {
+      const instructor=await Admin.findOne({_id:instructorId,role:"instructor"}).exec()
+      if(!instructor){
+        return res.status(404).json({success:false, message:"Instructor not found"})
+      }
+      const managedCourses= await Course.find({instructor:instructorId}).exec()
+      if(!managedCourses){
+        return res.status(200).json({success:true,message:"fetched Instructor details",data:{
+          profile:instructor,managedCourses:[]
+        }})
+      }
+      res.status(200).json({success:true,message:"fetched Instructor details",data:{profile:instructor,managedCourses:managedCourses}})
+    }catch(error){
+      next(error)
+    }
+}
+
+const deleteLearner = async (req, res, next) => {
+  const { learnerId } = req.params;
+
+  try {
+    // Find and delete all enrollments associated with the user
+    const enrollments = await Enrollment.find({ learner: learnerId }).exec();
+    if (enrollments.length > 0) {
+      await Enrollment.deleteMany({ learner: learnerId });
+    }
+
+    // Delete the user
+    const deletedUser = await User.findByIdAndDelete(learnerId);
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Learner not found",
+      });
+    }
+
+    // Respond with success
+    res.status(200).json({
+      success: true,
+      message: "learner and associated enrollments successfully deleted",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteEnrollment=async(req,res,next)=>{
+  const {enrollmentId}=req.params
+  try {
+    const deletedEnrollment = await Enrollment.findByIdAndDelete(enrollmentId).exec()
+    if(!deletedEnrollment){
+      return res.status(404).json({success:false,message:"enrollment does not exist"})
+    }
+    res.status(200).json({success:true,message:"enrollment successfully deleted"})
+  } catch (error) {
+    next(error)
+  }
+}
+const deleteInstructorById=async ( req,res,next )=>{
+  const {instructorId}=req.params
+  try {
+    const deletedInstructor=await Admin.findByIdAndDelete(instructorId).exec()
+    if(!deletedInstructor){
+      return res.status(404).json({success:false,message:"Instructor not found"})
+    }
+    res.status(200).json({success:true,message:"instructor deleted successfully"})
+    
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   adminProfile,
   updateAdminProfile,
@@ -206,5 +317,10 @@ module.exports = {
   getInstructorManagedCourses,
   getAllInstructors,
   getAllUsers,
-  getStats
+  getStats,
+  getInstructorById,
+  getLearnerById,
+  deleteLearner,
+  deleteEnrollment,
+  deleteInstructorById,
 };

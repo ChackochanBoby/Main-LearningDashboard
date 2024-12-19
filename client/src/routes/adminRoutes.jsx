@@ -18,6 +18,10 @@ import UserManagementPage from "../pages/UserManagementPage"
 import userManagementLoader from "../loaders/userManagementLoader"
 import AdminDashboard from "../pages/AdminDashboard"
 import AdminDashboardLoader from "../loaders/AdminDashboardLoader"
+import LearnerManagementPage from "../pages/LearnerManagementPage"
+import LearnerPageLoader from "../loaders/LearnerPageLoader"
+import InstructorManagementPage from "../pages/InstructorManagementPage"
+import InstructorPageLoader from "../loaders/instructorPageLoader"
 
 const adminRoutes=[{
       path: "/admin",
@@ -32,7 +36,9 @@ const adminRoutes=[{
         {path:"lesson/:lessonId",element:<LessonPage/>,loader:lessonLoaderAdmin},
         {path:"profile", element:<ProfilePage/>, loader:profilePageLoaderAdminAndInstructor },
         {path:"lesson/:lessonId/update",element:<UpdateLessonPage/>,loader:updateLessonPageLoader},
-        {path:"users",element:<UserManagementPage/>,loader:userManagementLoader}
+        {path:"users",element:<UserManagementPage/>,loader:userManagementLoader},
+        {path:"users/learners/:learnerId",element:<LearnerManagementPage/>,loader:LearnerPageLoader},
+        {path:"users/instructors/:instructorId",element:<InstructorManagementPage/>,loader:InstructorPageLoader},
       ],
     }]
 

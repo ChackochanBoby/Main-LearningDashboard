@@ -22,14 +22,13 @@ const SignupPageUser = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axiosInstance.post("/auth/user/register", data);
-      if (response.status === 200) {
+      if (response.status === 201) {
         notify("User registered successfully", "success", () =>
           navigate("/user")
         );
       }
     } catch (error) {
       if (error.response?.data?.message) {
-        // Server-side general error message (if any)
         notify(error.response.data.message, "error");
       } else {
         // Handle specific field errors (e.g., name, email, password)

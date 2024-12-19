@@ -1,20 +1,24 @@
 import { useLoaderData, useNavigate } from "react-router-dom";
 import CourseCard from "../components/CourseCard";
+import { useState } from "react";
 
 const CoursesPageAdmin = () => {
   const navigate = useNavigate();
   const {
     courses,
-    totalPages = 1, // Default to 1 if undefined
+    totalPages = 1,
     totalResults,
     currentPage,
-    currentStatusFilter,
+    currentStatusFilter = "approved",
     error,
   } = useLoaderData();
 
+  const [currentStatus, setCurrentStatus] = useState(currentStatusFilter);
+
   const handleStatusChange = (e) => {
-    const status = e.target.value;
-    navigate(`/admin/courses?page=1&status=${status}`);
+    const status = e.target.value; // Get the new status
+    setCurrentStatus(status); // Update the state
+    navigate(`/admin/courses?page=1&status=${status}`); // Navigate to the updated URL
   };
 
   const nextPage = () => {
@@ -22,7 +26,7 @@ const CoursesPageAdmin = () => {
     if (page > totalPages) {
       page = 1;
     }
-    navigate(`/admin/courses?page=${page}&status=${currentStatusFilter}`);
+    navigate(`/admin/courses?page=${page}&status=${currentStatus}`);
   };
 
   const previousPage = () => {
@@ -30,7 +34,7 @@ const CoursesPageAdmin = () => {
     if (page < 1) {
       page = totalPages;
     }
-    navigate(`/admin/courses?page=${page}&status=${currentStatusFilter}`);
+    navigate(`/admin/courses?page=${page}&status=${currentStatus}`);
   };
 
   return (
@@ -48,7 +52,7 @@ const CoursesPageAdmin = () => {
           </div>
           <select
             id="status-filter"
-            value={currentStatusFilter}
+            value={currentStatus}
             onChange={handleStatusChange}
             className="select select-bordered"
           >
@@ -59,12 +63,12 @@ const CoursesPageAdmin = () => {
 
         {totalResults > 0 ? (
           <div className="h-full flex flex-col justify-between w-full items-center">
-            <div className="w-fit mx-auto md:w-full my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-6 sm:gap-x-6 ">
+            <div className="w-fit mx-auto md:w-full my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-6 sm:gap-x-6">
               {courses.map((course, index) => (
                 <CourseCard course={course} directTo={"details"} key={index} />
               ))}
             </div>
-            {totalPages > 1 && ( // Ensure pagination is only shown for more than 1 page
+            {totalPages > 1 && (
               <div className="flex items-center justify-center space-x-4 p-4 bg-inherit rounded-lg">
                 <button className="btn btn-primary" onClick={previousPage}>
                   «

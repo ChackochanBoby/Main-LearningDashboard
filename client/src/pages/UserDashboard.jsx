@@ -37,9 +37,9 @@ const UserDashboard = () => {
             </button>
         )}
         </div>
-        {!courses.length>0?<div>
+        {!courses.length>0?<div className="xl:container mx-auto p-8 flex flex-col justify-center items-center gap-4">
           <p>you are not enrolled in any courses.</p>
-          <Link to={"/user/courses"}>Explore</Link>
+          <Link to={"/user/courses"} className="btn btn-primary">Explore</Link>
         </div>:<div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-6 p-8">
         {visibleCourses.map((course, index) => (
             <CourseCard key={index} course={course} />
